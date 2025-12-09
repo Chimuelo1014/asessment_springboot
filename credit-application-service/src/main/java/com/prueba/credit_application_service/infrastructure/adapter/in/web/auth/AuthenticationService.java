@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-class AuthenticationService {
+public class AuthenticationService {
 
         private final UserJpaRepository userRepository;
         private final PasswordEncoder passwordEncoder;
