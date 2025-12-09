@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class InsufficientSeniorityException extends DomainException {
+public class InsufficientSeniorityException extends DomainException {
     public InsufficientSeniorityException(String message) {
         super(message);
     }

@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class CreditApplicationNotFoundException extends DomainException {
+public class CreditApplicationNotFoundException extends DomainException {
     public CreditApplicationNotFoundException(String message) {
         super(message);
     }

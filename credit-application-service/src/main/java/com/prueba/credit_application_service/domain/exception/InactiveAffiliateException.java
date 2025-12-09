@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class InactiveAffiliateException extends DomainException {
+public class InactiveAffiliateException extends DomainException {
     public InactiveAffiliateException(String message) {
         super(message);
     }

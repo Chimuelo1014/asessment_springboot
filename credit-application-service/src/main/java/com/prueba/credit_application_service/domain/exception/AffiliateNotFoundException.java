@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class AffiliateNotFoundException extends DomainException {
+public class AffiliateNotFoundException extends DomainException {
     public AffiliateNotFoundException(String message) {
         super(message);
     }

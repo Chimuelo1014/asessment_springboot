@@ -1,5 +1,18 @@
+package com.prueba.credit_application_service.application.usecase;
 
-private final CreditApplicationRepositoryPort creditApplicationRepository;
+import com.prueba.credit_application_service.domain.exception.CreditApplicationNotFoundException;
+import com.prueba.credit_application_service.domain.model.CreditApplication;
+import com.prueba.credit_application_service.domain.model.RiskEvaluation;
+import com.prueba.credit_application_service.domain.port.in.EvaluateCreditApplicationUseCase;
+import com.prueba.credit_application_service.domain.port.out.CreditApplicationRepositoryPort;
+import com.prueba.credit_application_service.domain.port.out.RiskEvaluationPort;
+
+/**
+ * EvaluateCreditApplicationService - USE CASE (PURE APPLICATION LOGIC)
+ */
+public class EvaluateCreditApplicationService implements EvaluateCreditApplicationUseCase {
+
+    private final CreditApplicationRepositoryPort creditApplicationRepository;
     private final RiskEvaluationPort riskEvaluationPort;
 
     public EvaluateCreditApplicationService(

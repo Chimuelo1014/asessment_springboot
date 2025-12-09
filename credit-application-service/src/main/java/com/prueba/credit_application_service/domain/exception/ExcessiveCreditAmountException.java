@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class ExcessiveCreditAmountException extends DomainException {
+public class ExcessiveCreditAmountException extends DomainException {
     public ExcessiveCreditAmountException(String message) {
         super(message);
     }

@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class UnaffordablePaymentException extends DomainException {
+public class UnaffordablePaymentException extends DomainException {
     public UnaffordablePaymentException(String message) {
         super(message);
     }

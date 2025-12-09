@@ -1,6 +1,6 @@
 package com.prueba.credit_application_service.domain.exception;
 
-class DuplicateDocumentException extends DomainException {
+public class DuplicateDocumentException extends DomainException {
     public DuplicateDocumentException(String message) {
         super(message);
     }
@@ -9,4 +9,3 @@ class DuplicateDocumentException extends DomainException {
         return new DuplicateDocumentException("Document already exists: " + document);
     }
 }
-
