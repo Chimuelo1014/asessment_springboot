@@ -5,17 +5,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+/**
+ * RiskEvaluationResponse - CORREGIDO según enunciado
+ * 
+ * Formato requerido:
+ * {
+ *   "documento": "1017654311",
+ *   "score": 642,
+ *   "nivelRiesgo": "MEDIO",
+ *   "detalle": "Historial crediticio moderado."
+ * }
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationResponse {
-    private String document;
-    private Integer score; // 300-850
-    private String riskLevel; // LOW, MEDIUM, HIGH
-    private String recommendation; // APPROVED, REVIEW, REJECTED
-    private String message;
-    private LocalDateTime evaluationDate;
+    private String documento;        // Cambiado de "document"
+    private Integer score;           // 300-950
+    private String nivelRiesgo;      // BAJO, MEDIO, ALTO (cambiado de "riskLevel")
+    private String detalle;          // Cambiado de "message"
+    // REMOVIDO: recommendation, evaluationDate (no están en el enunciado)
 }

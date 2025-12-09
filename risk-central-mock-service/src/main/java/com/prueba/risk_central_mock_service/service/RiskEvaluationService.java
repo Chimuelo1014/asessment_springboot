@@ -11,6 +11,16 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+/**
+ * RiskEvaluationService - CORREGIDO según enunciado
+ * 
+ * Reglas:
+ * - Score: 300-950 (no 300-850)
+ * - ALTO RIESGO: 300-500
+ * - MEDIO RIESGO: 501-700
+ * - BAJO RIESGO: 701-950
+ * - Mismo documento = mismo score (determinístico)
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -19,66 +29,62 @@ public class RiskEvaluationService {
     private final MeterRegistry meterRegistry;
 
     public RiskEvaluationResponse evaluateRisk(RiskEvaluationRequest request) {
-        log.info("Evaluating risk for document: {}", request.getDocument());
+        log.info("Evaluando riesgo para documento: {}", request.getDocumento());
         
-        // Use document hash as seed for consistent results
-        int seed = request.getDocument().hashCode();
+        // CORREGIDO: Usar documento como seed para consistencia
+        int seed = request.getDocumento().hashCode();
         Random random = new Random(seed);
         
-        // Generate score between 300 and 850 (like FICO score)
-        int score = 300 + random.nextInt(551);
+        // CORREGIDO: Generar score entre 300 y 950 (no 850)
+        int score = 300 + random.nextInt(651); // 651 para cubrir 300-950
         
-        // Determine risk level and recommendation
-        String riskLevel = determineRiskLevel(score);
-        String recommendation = determineRecommendation(score);
-        String message = generateMessage(score, riskLevel);
+        // CORREGIDO: Determinar nivel según enunciado
+        String nivelRiesgo = determineRiskLevel(score);
+        String detalle = generateDetailMessage(score, nivelRiesgo);
         
-        // Increment metrics
+        // Métricas
         Counter.builder("risk_evaluations_total")
-            .tag("risk_level", riskLevel)
-            .tag("recommendation", recommendation)
+            .tag("nivel_riesgo", nivelRiesgo)
             .register(meterRegistry)
             .increment();
         
-        log.info("Risk evaluation completed - Document: {}, Score: {}, Risk: {}", 
-            request.getDocument(), score, riskLevel);
+        log.info("Evaluación completada - Documento: {}, Score: {}, Nivel: {}", 
+            request.getDocumento(), score, nivelRiesgo);
         
+        // CORREGIDO: Respuesta según formato del enunciado
         return RiskEvaluationResponse.builder()
-            .document(request.getDocument())
+            .documento(request.getDocumento())
             .score(score)
-            .riskLevel(riskLevel)
-            .recommendation(recommendation)
-            .message(message)
-            .evaluationDate(LocalDateTime.now())
+            .nivelRiesgo(nivelRiesgo)
+            .detalle(detalle)
             .build();
     }
 
+    /**
+     * CORREGIDO según enunciado:
+     * - 300-500 → ALTO RIESGO
+     * - 501-700 → MEDIO RIESGO  
+     * - 701-950 → BAJO RIESGO
+     */
     private String determineRiskLevel(int score) {
-        if (score >= 700) {
-            return "LOW";
-        } else if (score >= 550) {
-            return "MEDIUM";
+        if (score >= 701) {
+            return "BAJO";
+        } else if (score >= 501) {
+            return "MEDIO";
         } else {
-            return "HIGH";
+            return "ALTO";
         }
     }
 
-    private String determineRecommendation(int score) {
-        if (score >= 700) {
-            return "APPROVED";
-        } else if (score >= 550) {
-            return "REVIEW";
-        } else {
-            return "REJECTED";
-        }
-    }
-
-    private String generateMessage(int score, String riskLevel) {
-        return switch (riskLevel) {
-            case "LOW" -> String.format("Excellent credit profile (Score: %d). Low risk applicant.", score);
-            case "MEDIUM" -> String.format("Acceptable credit profile (Score: %d). Manual review recommended.", score);
-            case "HIGH" -> String.format("Poor credit profile (Score: %d). High risk applicant.", score);
-            default -> "Unable to determine risk level";
+    /**
+     * CORREGIDO: Generar mensaje de detalle según nivel
+     */
+    private String generateDetailMessage(int score, String nivelRiesgo) {
+        return switch (nivelRiesgo) {
+            case "BAJO" -> String.format("Excelente historial crediticio (Score: %d). Cliente confiable.", score);
+            case "MEDIO" -> String.format("Historial crediticio moderado (Score: %d). Requiere análisis adicional.", score);
+            case "ALTO" -> String.format("Historial crediticio deficiente (Score: %d). Alto riesgo de impago.", score);
+            default -> "No se pudo determinar el nivel de riesgo";
         };
     }
 }

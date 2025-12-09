@@ -7,12 +7,14 @@ import java.util.Objects;
 
 /**
  * CreditApplication - DOMAIN MODEL (100% PURE JAVA)
+ * UPDATED: Added interestRate field as per requirements
  */
 public class CreditApplication {
     private Long id;
     private Affiliate affiliate;
     private Double requestedAmount;
     private Integer termMonths;
+    private Double interestRate; // NEW: Tasa propuesta
     private CreditApplicationStatus status;
     private LocalDateTime applicationDate;
     private LocalDateTime evaluationDate;
@@ -25,24 +27,41 @@ public class CreditApplication {
 
     // Full constructor
     public CreditApplication(Long id, Affiliate affiliate, Double requestedAmount,
-            Integer termMonths, CreditApplicationStatus status,
+            Integer termMonths, Double interestRate, CreditApplicationStatus status,
             LocalDateTime applicationDate) {
         this.id = id;
         this.affiliate = affiliate;
         this.requestedAmount = requestedAmount;
         this.termMonths = termMonths;
+        this.interestRate = interestRate;
         this.status = status;
         this.applicationDate = applicationDate;
     }
 
     // BUSINESS LOGIC METHODS
 
+    /**
+     * Calculates the monthly payment including interest
+     * Using simple interest formula: P * (1 + r*t) / t
+     * where P = principal, r = monthly rate, t = term in months
+     */
     public Double calculateMonthlyPayment() {
         if (requestedAmount == null || termMonths == null || termMonths == 0) {
             return 0.0;
         }
-        // Simple calculation without interest
-        return requestedAmount / termMonths;
+        
+        if (interestRate == null || interestRate == 0.0) {
+            // Simple calculation without interest
+            return requestedAmount / termMonths;
+        }
+        
+        // Convert annual rate to monthly rate
+        double monthlyRate = interestRate / 12 / 100;
+        
+        // Calculate total amount with interest (simple interest)
+        double totalAmount = requestedAmount * (1 + (monthlyRate * termMonths));
+        
+        return totalAmount / termMonths;
     }
 
     public boolean isPaymentAffordable(Double monthlyIncome, Double maxDebtRatio) {
@@ -109,6 +128,14 @@ public class CreditApplication {
         this.termMonths = termMonths;
     }
 
+    public Double getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(Double interestRate) {
+        this.interestRate = interestRate;
+    }
+
     public CreditApplicationStatus getStatus() {
         return status;
     }
@@ -169,6 +196,8 @@ public class CreditApplication {
         return "CreditApplication{" +
                 "id=" + id +
                 ", requestedAmount=" + requestedAmount +
+                ", termMonths=" + termMonths +
+                ", interestRate=" + interestRate +
                 ", status=" + status +
                 '}';
     }
