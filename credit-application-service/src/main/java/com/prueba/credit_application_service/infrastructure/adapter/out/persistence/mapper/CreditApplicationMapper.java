@@ -4,6 +4,8 @@ import com.prueba.credit_application_service.domain.model.CreditApplication;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.CreditApplicationEntity;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * CreditApplicationMapper - Maps between domain and entity
@@ -13,6 +15,8 @@ public class CreditApplicationMapper {
 
     private final AffiliateMapper affiliateMapper;
     private final RiskEvaluationMapper riskEvaluationMapper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public CreditApplicationMapper(@Lazy AffiliateMapper affiliateMapper,
             @Lazy RiskEvaluationMapper riskEvaluationMapper) {
@@ -35,7 +39,10 @@ public class CreditApplicationMapper {
 
         // Map affiliate
         if (entity.getAffiliate() != null) {
-            domain.setAffiliate(affiliateMapper.toDomain(entity.getAffiliate()));
+            // Solo setear el ID para evitar LazyInitializationException
+            var affiliate = new com.prueba.credit_application_service.domain.model.Affiliate();
+            affiliate.setId(entity.getAffiliate().getId());
+            domain.setAffiliate(affiliate);
         }
 
         // Map risk evaluation
@@ -60,8 +67,11 @@ public class CreditApplicationMapper {
         entity.setAnalystComments(domain.getAnalystComments());
 
         // Map affiliate
-        if (domain.getAffiliate() != null) {
-            entity.setAffiliate(affiliateMapper.toEntity(domain.getAffiliate()));
+        if (domain.getAffiliate() != null && domain.getAffiliate().getId() != null) {
+            entity.setAffiliate(
+                    entityManager.getReference(
+                            com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.AffiliateEntity.class,
+                            domain.getAffiliate().getId()));
         }
 
         return entity;

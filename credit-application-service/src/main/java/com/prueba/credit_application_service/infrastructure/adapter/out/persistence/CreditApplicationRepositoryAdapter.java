@@ -61,13 +61,15 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
 
     @Override
     public List<CreditApplication> findAll() {
-        return jpaRepository.findAll().stream()
+        // Usar la versión que trae affiliate y riskEvaluation para evitar LazyInitializationException
+        return jpaRepository.findAllWithDetails().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<CreditApplication> findByAffiliateId(Long affiliateId) {
+        // el repo ya tiene JOIN FETCH para affiliate
         return jpaRepository.findByAffiliateId(affiliateId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -75,7 +77,8 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
 
     @Override
     public List<CreditApplication> findByStatus(CreditApplicationStatus status) {
-        return jpaRepository.findByStatus(status).stream()
+        // usar la versión con JOIN FETCH definida en el repo
+        return jpaRepository.findByStatusWithAffiliate(status).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }

@@ -58,7 +58,7 @@ class CreditApplicationControllerIntegrationTest {
     void setUp() {
         // Create an affiliate for testing
         Affiliate affiliate = new Affiliate();
-        affiliate.setDocument("TEST123456");
+        affiliate.setDocument("TEST-" + System.nanoTime());
         affiliate.setFullName("Test Affiliate");
         affiliate.setEmail("test.affiliate@example.com");
         affiliate.setPhone("555-9999");
