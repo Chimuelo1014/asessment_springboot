@@ -1,10 +1,10 @@
 package com.prueba.credit_application_service.infrastructure.config;
 
-import com.coopcredit.creditapp.application.usecase.*;
-import com.coopcredit.creditapp.domain.port.in.*;
-import com.coopcredit.creditapp.domain.port.out.AffiliateRepositoryPort;
-import com.coopcredit.creditapp.domain.port.out.CreditApplicationRepositoryPort;
-import com.coopcredit.creditapp.domain.port.out.RiskEvaluationPort;
+import com.prueba.credit_application_service.application.usecase.*;
+import com.prueba.credit_application_service.domain.port.in.*;
+import com.prueba.credit_application_service.domain.port.out.AffiliateRepositoryPort;
+import com.prueba.credit_application_service.domain.port.out.CreditApplicationRepositoryPort;
+import com.prueba.credit_application_service.domain.port.out.RiskEvaluationPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,9 +46,8 @@ public class UseCaseConfig {
             AffiliateRepositoryPort affiliateRepository,
             CreditApplicationRepositoryPort creditApplicationRepository) {
         return new RegisterCreditApplicationService(
-            affiliateRepository, 
-            creditApplicationRepository
-        );
+                affiliateRepository,
+                creditApplicationRepository);
     }
 
     /**
@@ -59,9 +58,8 @@ public class UseCaseConfig {
             CreditApplicationRepositoryPort creditApplicationRepository,
             RiskEvaluationPort riskEvaluationPort) {
         return new EvaluateCreditApplicationService(
-            creditApplicationRepository,
-            riskEvaluationPort
-        );
+                creditApplicationRepository,
+                riskEvaluationPort);
     }
 
     /**

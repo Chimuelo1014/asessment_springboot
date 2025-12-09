@@ -1,10 +1,10 @@
 package com.prueba.credit_application_service.application.usecase;
 
-import com.coopcredit.creditapp.domain.exception.CreditApplicationNotFoundException;
-import com.coopcredit.creditapp.domain.model.CreditApplication;
-import com.coopcredit.creditapp.domain.model.enums.CreditApplicationStatus;
-import com.coopcredit.creditapp.domain.port.in.GetCreditApplicationUseCase;
-import com.coopcredit.creditapp.domain.port.out.CreditApplicationRepositoryPort;
+import com.prueba.credit_application_service.domain.exception.CreditApplicationNotFoundException;
+import com.prueba.credit_application_service.domain.model.CreditApplication;
+import com.prueba.credit_application_service.domain.model.enums.CreditApplicationStatus;
+import com.prueba.credit_application_service.domain.port.in.GetCreditApplicationUseCase;
+import com.prueba.credit_application_service.domain.port.out.CreditApplicationRepositoryPort;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class GetCreditApplicationService implements GetCreditApplicationUseCase 
     @Override
     public CreditApplication getById(Long id) {
         return creditApplicationRepository.findById(id)
-            .orElseThrow(() -> CreditApplicationNotFoundException.withId(id));
+                .orElseThrow(() -> CreditApplicationNotFoundException.withId(id));
     }
 
     @Override

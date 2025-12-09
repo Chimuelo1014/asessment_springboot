@@ -1,10 +1,10 @@
 package com.prueba.credit_application_service.infrastructure.adapter.in.web.controller;
 
-import com.coopcredit.creditapp.domain.model.Affiliate;
-import com.coopcredit.creditapp.domain.port.in.GetAffiliateUseCase;
-import com.coopcredit.creditapp.domain.port.in.RegisterAffiliateUseCase;
-import com.coopcredit.creditapp.infrastructure.adapter.in.web.dto.AffiliateRequest;
-import com.coopcredit.creditapp.infrastructure.adapter.in.web.dto.AffiliateResponse;
+import com.prueba.credit_application_service.domain.model.Affiliate;
+import com.prueba.credit_application_service.domain.port.in.GetAffiliateUseCase;
+import com.prueba.credit_application_service.domain.port.in.RegisterAffiliateUseCase;
+import com.prueba.credit_application_service.infrastructure.adapter.in.web.dto.AffiliateRequest;
+import com.prueba.credit_application_service.infrastructure.adapter.in.web.dto.AffiliateResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,13 @@ import java.util.stream.Collectors;
 public class AffiliateController {
 
     private static final Logger log = LoggerFactory.getLogger(AffiliateController.class);
-    
+
     // Dependencies are USE CASE INTERFACES (ports from domain)
     private final RegisterAffiliateUseCase registerUseCase;
     private final GetAffiliateUseCase getUseCase;
 
-    public AffiliateController(RegisterAffiliateUseCase registerUseCase, 
-                              GetAffiliateUseCase getUseCase) {
+    public AffiliateController(RegisterAffiliateUseCase registerUseCase,
+            GetAffiliateUseCase getUseCase) {
         this.registerUseCase = registerUseCase;
         this.getUseCase = getUseCase;
     }
@@ -48,35 +48,33 @@ public class AffiliateController {
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
     public ResponseEntity<AffiliateResponse> createAffiliate(
             @Valid @RequestBody AffiliateRequest request) {
-        
+
         log.info("Creating new affiliate with document: {}", request.getDocument());
-        
+
         // Convert DTO to command (domain input)
-        RegisterAffiliateUseCase.AffiliateRegistrationCommand command =
-            new RegisterAffiliateUseCase.AffiliateRegistrationCommand(
+        RegisterAffiliateUseCase.AffiliateRegistrationCommand command = new RegisterAffiliateUseCase.AffiliateRegistrationCommand(
                 request.getDocument(),
                 request.getFullName(),
                 request.getEmail(),
                 request.getPhone(),
-                request.getMonthlySalary()
-            );
-        
+                request.getMonthlySalary());
+
         // Call use case through PORT
         Affiliate affiliate = registerUseCase.register(command);
-        
+
         // Convert domain to DTO (presentation)
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(mapToResponse(affiliate));
+                .body(mapToResponse(affiliate));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('AFILIADO', 'ANALISTA', 'ADMIN')")
     public ResponseEntity<AffiliateResponse> getAffiliate(@PathVariable Long id) {
         log.debug("Getting affiliate: {}", id);
-        
+
         // Call use case through PORT
         Affiliate affiliate = getUseCase.getById(id);
-        
+
         // Convert domain to DTO
         return ResponseEntity.ok(mapToResponse(affiliate));
     }
@@ -85,7 +83,7 @@ public class AffiliateController {
     @PreAuthorize("hasAnyRole('AFILIADO', 'ANALISTA', 'ADMIN')")
     public ResponseEntity<AffiliateResponse> getByDocument(@PathVariable String document) {
         log.debug("Getting affiliate by document: {}", document);
-        
+
         Affiliate affiliate = getUseCase.getByDocument(document);
         return ResponseEntity.ok(mapToResponse(affiliate));
     }
@@ -94,12 +92,12 @@ public class AffiliateController {
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
     public ResponseEntity<List<AffiliateResponse>> getAllAffiliates() {
         log.debug("Getting all affiliates");
-        
+
         List<Affiliate> affiliates = getUseCase.getAll();
         List<AffiliateResponse> response = affiliates.stream()
-            .map(this::mapToResponse)
-            .collect(Collectors.toList());
-        
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(response);
     }
 

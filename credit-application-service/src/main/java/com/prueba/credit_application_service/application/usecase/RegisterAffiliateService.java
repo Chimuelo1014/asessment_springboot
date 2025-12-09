@@ -1,10 +1,10 @@
 package com.prueba.credit_application_service.application.usecase;
 
-import com.coopcredit.creditapp.domain.exception.DuplicateDocumentException;
-import com.coopcredit.creditapp.domain.model.Affiliate;
-import com.coopcredit.creditapp.domain.model.enums.AffiliateStatus;
-import com.coopcredit.creditapp.domain.port.in.RegisterAffiliateUseCase;
-import com.coopcredit.creditapp.domain.port.out.AffiliateRepositoryPort;
+import com.prueba.credit_application_service.domain.exception.DuplicateDocumentException;
+import com.prueba.credit_application_service.domain.model.Affiliate;
+import com.prueba.credit_application_service.domain.model.enums.AffiliateStatus;
+import com.prueba.credit_application_service.domain.port.in.RegisterAffiliateUseCase;
+import com.prueba.credit_application_service.domain.port.out.AffiliateRepositoryPort;
 
 import java.time.LocalDate;
 
@@ -28,7 +28,7 @@ public class RegisterAffiliateService implements RegisterAffiliateUseCase {
         if (affiliateRepository.existsByDocument(command.document())) {
             throw DuplicateDocumentException.forDocument(command.document());
         }
-        
+
         // Create domain object
         Affiliate affiliate = new Affiliate();
         affiliate.setDocument(command.document());
@@ -38,7 +38,7 @@ public class RegisterAffiliateService implements RegisterAffiliateUseCase {
         affiliate.setMonthlySalary(command.monthlySalary());
         affiliate.setStatus(AffiliateStatus.ACTIVE);
         affiliate.setAffiliationDate(LocalDate.now());
-        
+
         // Persist through port
         return affiliateRepository.save(affiliate);
     }

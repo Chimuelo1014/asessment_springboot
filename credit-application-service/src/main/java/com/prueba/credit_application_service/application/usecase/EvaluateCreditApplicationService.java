@@ -1,19 +1,5 @@
-package com.prueba.credit_application_service.application.usecase;
 
-import com.coopcredit.creditapp.domain.exception.CreditApplicationNotFoundException;
-import com.coopcredit.creditapp.domain.model.CreditApplication;
-import com.coopcredit.creditapp.domain.model.RiskEvaluation;
-import com.coopcredit.creditapp.domain.model.enums.CreditApplicationStatus;
-import com.coopcredit.creditapp.domain.port.in.EvaluateCreditApplicationUseCase;
-import com.coopcredit.creditapp.domain.port.out.CreditApplicationRepositoryPort;
-import com.coopcredit.creditapp.domain.port.out.RiskEvaluationPort;
-
-/**
- * EvaluateCreditApplicationService - USE CASE (PURE APPLICATION LOGIC)
- */
-public class EvaluateCreditApplicationService implements EvaluateCreditApplicationUseCase {
-
-    private final CreditApplicationRepositoryPort creditApplicationRepository;
+private final CreditApplicationRepositoryPort creditApplicationRepository;
     private final RiskEvaluationPort riskEvaluationPort;
 
     public EvaluateCreditApplicationService(

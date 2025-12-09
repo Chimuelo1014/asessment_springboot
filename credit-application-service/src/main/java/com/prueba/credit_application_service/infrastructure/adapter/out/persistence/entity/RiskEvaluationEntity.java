@@ -20,29 +20,29 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-class RiskEvaluationEntity {
-    
+public class RiskEvaluationEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "credit_application_id", nullable = false, unique = true)
     private CreditApplicationEntity creditApplication;
-    
+
     @Column(nullable = false)
     private Integer score;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "risk_level", nullable = false, length = 20)
     private RiskLevel riskLevel;
-    
+
     @Column(length = 50)
     private String recommendation;
-    
+
     @Column(name = "evaluation_message", columnDefinition = "TEXT")
     private String evaluationMessage;
-    
+
     @Column(name = "evaluation_date", nullable = false)
     private LocalDateTime evaluationDate;
 }
