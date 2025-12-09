@@ -7,27 +7,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * RiskEvaluationRequest - CORREGIDO según enunciado
- * 
- * Formato requerido:
- * {
- *   "documento": "string",
- *   "monto": 5000000,
- *   "plazo": 36
- * }
+ * CORREGIDO según enunciado - campos en español
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationRequest {
     @NotBlank(message = "Documento es requerido")
-    private String documento;  // Cambiado de "document"
+    private String documento;
     
     @Positive(message = "Monto debe ser positivo")
-    private Double monto;      // Cambiado de "requestedAmount"
+    private Double monto;
     
     @Positive(message = "Plazo debe ser positivo")
-    private Integer plazo;     // Cambiado de "monthlyIncome"
-    
-    // REMOVIDO: fullName (no está en el enunciado)
+    private Integer plazo;
 }

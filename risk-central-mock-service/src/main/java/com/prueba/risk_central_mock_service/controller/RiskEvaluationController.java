@@ -21,7 +21,7 @@ public class RiskEvaluationController {
     public ResponseEntity<RiskEvaluationResponse> evaluate(
             @Valid @RequestBody RiskEvaluationRequest request) {
         
-        log.info("Received risk evaluation request for document: {}", request.getDocument());
+        log.info("Solicitud de evaluación de riesgo recibida para documento: {}", request.getDocumento());
         
         RiskEvaluationResponse response = riskEvaluationService.evaluateRisk(request);
         

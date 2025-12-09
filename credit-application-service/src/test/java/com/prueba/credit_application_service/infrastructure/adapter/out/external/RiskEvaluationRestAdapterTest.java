@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -68,5 +66,24 @@ class RiskEvaluationRestAdapterTest {
             adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Failed to evaluate risk");
+    }
+
+    @Test
+    void shouldMapLowRiskCorrectly() {
+        // Given
+        RiskEvaluationExternalResponse mockResponse = new RiskEvaluationExternalResponse();
+        mockResponse.setDocumento("123456789");
+        mockResponse.setScore(800);
+        mockResponse.setNivelRiesgo("BAJO");
+        mockResponse.setDetalle("Low risk");
+
+        when(restTemplate.postForObject(anyString(), any(), eq(RiskEvaluationExternalResponse.class)))
+            .thenReturn(mockResponse);
+
+        // When
+        RiskEvaluation result = adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0);
+
+        // Then
+        assertThat(result.getRecommendation()).isEqualTo("APPROVED");
     }
 }

@@ -8,25 +8,19 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
- * OpenApiConfig - NUEVO según requerimientos del enunciado
- * Configuración de Swagger/OpenAPI para documentación de la API
+ * OpenApiConfig - Configuración de Swagger/OpenAPI
  */
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${spring.application.name:credit-application-service}")
-    private String applicationName;
-
     @Bean
     public OpenAPI customOpenAPI() {
-        // Define el esquema de seguridad JWT
         final String securitySchemeName = "bearerAuth";
         
         return new OpenAPI()

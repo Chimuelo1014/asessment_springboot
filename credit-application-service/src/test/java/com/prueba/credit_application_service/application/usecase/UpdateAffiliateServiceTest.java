@@ -66,6 +66,26 @@ class UpdateAffiliateServiceTest {
             .isInstanceOf(AffiliateNotFoundException.class);
     }
 
+    @Test
+    void shouldNotUpdateNullFields() {
+        // Given
+        Affiliate existing = createAffiliate();
+        UpdateAffiliateCommand command = new UpdateAffiliateCommand(
+            1L, null, null, null, null
+        );
+
+        when(affiliateRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(affiliateRepository.save(any(Affiliate.class)))
+            .thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        Affiliate result = updateService.update(command);
+
+        // Then - valores originales deben mantenerse
+        assertThat(result.getFullName()).isEqualTo("John Doe");
+        assertThat(result.getEmail()).isEqualTo("john@example.com");
+    }
+
     private Affiliate createAffiliate() {
         Affiliate affiliate = new Affiliate();
         affiliate.setId(1L);

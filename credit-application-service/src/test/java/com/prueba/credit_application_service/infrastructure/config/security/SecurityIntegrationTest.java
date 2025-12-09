@@ -16,6 +16,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,6 +36,7 @@ class SecurityIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("external.risk-service.url", () -> "http://localhost:8081");
     }
 
     @Autowired
@@ -82,5 +84,15 @@ class SecurityIntegrationTest {
             .get("token").asText();
         
         assertThat(token).isNotBlank();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldAllowAdminAccessToAllEndpoints() throws Exception {
+        mockMvc.perform(get("/api/v1/affiliates"))
+            .andExpect(status().isOk());
+        
+        mockMvc.perform(get("/api/v1/credit-applications"))
+            .andExpect(status().isOk());
     }
 }

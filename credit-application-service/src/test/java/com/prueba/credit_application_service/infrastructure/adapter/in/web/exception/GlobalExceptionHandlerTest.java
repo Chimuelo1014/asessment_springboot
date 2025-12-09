@@ -2,6 +2,7 @@ package com.prueba.credit_application_service.infrastructure.adapter.in.web.exce
 
 import com.prueba.credit_application_service.domain.exception.AffiliateNotFoundException;
 import com.prueba.credit_application_service.domain.exception.DuplicateDocumentException;
+import com.prueba.credit_application_service.domain.exception.InactiveAffiliateException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -39,6 +40,20 @@ class GlobalExceptionHandlerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    void shouldHandleBusinessRuleException() {
+        // Given
+        InactiveAffiliateException exception = 
+            InactiveAffiliateException.forAffiliate(1L);
+
+        // When
+        ResponseEntity<ProblemDetail> response = handler.handleBusinessRuleExceptions(exception);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
     }
 }

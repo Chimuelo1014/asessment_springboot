@@ -10,6 +10,8 @@ import com.prueba.credit_application_service.infrastructure.adapter.in.web.dto.C
 import com.prueba.credit_application_service.infrastructure.adapter.in.web.dto.RiskEvaluationResponse;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +24,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * CreditApplicationController - INFRASTRUCTURE LAYER (Web Adapter)
- * 
- * Depends on USE CASE INTERFACES (ports), NOT implementations
- */
 @RestController
 @RequestMapping("/api/v1/credit-applications")
+@Tag(name = "Credit Applications", description = "Credit application management endpoints")
 public class CreditApplicationController {
 
     private static final Logger log = LoggerFactory.getLogger(CreditApplicationController.class);
 
-    // Dependencies are USE CASE INTERFACES (domain ports)
     private final RegisterCreditApplicationUseCase registerUseCase;
     private final EvaluateCreditApplicationUseCase evaluateUseCase;
     private final GetCreditApplicationUseCase getUseCase;
@@ -52,6 +49,7 @@ public class CreditApplicationController {
 
     @PostMapping
     @PreAuthorize("hasRole('AFILIADO')")
+    @Operation(summary = "Create credit application", description = "Submit a new credit application request")
     public ResponseEntity<CreditApplicationResponse> createApplication(
             @Valid @RequestBody CreditApplicationRequest request) {
 
@@ -61,13 +59,13 @@ public class CreditApplicationController {
                 .register(meterRegistry)
                 .increment();
 
-        // Convert DTO to command
-        RegisterCreditApplicationUseCase.CreditApplicationCommand command = new RegisterCreditApplicationUseCase.CreditApplicationCommand(
+        RegisterCreditApplicationUseCase.CreditApplicationCommand command = 
+            new RegisterCreditApplicationUseCase.CreditApplicationCommand(
                 request.getAffiliateId(),
                 request.getRequestedAmount(),
-                request.getTermMonths());
+                request.getTermMonths(),
+                request.getInterestRate()); // NUEVO
 
-        // Call use case through PORT
         CreditApplication application = registerUseCase.register(command);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -76,106 +74,94 @@ public class CreditApplicationController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Get application by ID")
     public ResponseEntity<CreditApplicationResponse> getApplication(@PathVariable Long id) {
         log.debug("Getting credit application: {}", id);
-
         CreditApplication application = getUseCase.getById(id);
         return ResponseEntity.ok(mapToResponse(application));
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Get all applications")
     public ResponseEntity<List<CreditApplicationResponse>> getAllApplications() {
         log.debug("Getting all credit applications");
-
         List<CreditApplication> applications = getUseCase.getAll();
         List<CreditApplicationResponse> response = applications.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Get pending applications")
     public ResponseEntity<List<CreditApplicationResponse>> getPendingApplications() {
         log.debug("Getting pending credit applications");
-
         List<CreditApplication> applications = getUseCase.getByStatus(
                 CreditApplicationStatus.PENDING);
         List<CreditApplicationResponse> response = applications.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-applications")
     @PreAuthorize("hasRole('AFILIADO')")
+    @Operation(summary = "Get my applications")
     public ResponseEntity<List<CreditApplicationResponse>> getMyApplications(
             @RequestParam Long affiliateId) {
         log.debug("Getting applications for affiliate: {}", affiliateId);
-
         List<CreditApplication> applications = getUseCase.getByAffiliateId(affiliateId);
         List<CreditApplicationResponse> response = applications.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/evaluate")
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Evaluate application")
     public ResponseEntity<CreditApplicationResponse> evaluateApplication(@PathVariable Long id) {
         log.info("Evaluating credit application: {}", id);
-
         Counter.builder("credit_applications_evaluated_total")
                 .register(meterRegistry)
                 .increment();
-
         CreditApplication application = evaluateUseCase.evaluate(id);
-
         return ResponseEntity.ok(mapToResponse(application));
     }
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Manually approve application")
     public ResponseEntity<CreditApplicationResponse> approveApplication(
             @PathVariable Long id,
             @RequestParam(required = false) String comments) {
-
         log.info("Manually approving application: {}", id);
-
         CreditApplication application = evaluateUseCase.approveManually(id, comments);
-
         return ResponseEntity.ok(mapToResponse(application));
     }
 
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @Operation(summary = "Manually reject application")
     public ResponseEntity<CreditApplicationResponse> rejectApplication(
             @PathVariable Long id,
             @RequestParam(required = false) String comments) {
-
         log.info("Manually rejecting application: {}", id);
-
         CreditApplication application = evaluateUseCase.rejectManually(id, comments);
-
         return ResponseEntity.ok(mapToResponse(application));
     }
 
-    /**
-     * Maps domain object to DTO
-     */
     private CreditApplicationResponse mapToResponse(CreditApplication app) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         CreditApplicationResponse response = new CreditApplicationResponse();
         response.setId(app.getId());
         response.setAffiliateId(app.getAffiliate().getId());
         response.setAffiliateName(app.getAffiliate().getFullName());
         response.setRequestedAmount(app.getRequestedAmount());
         response.setTermMonths(app.getTermMonths());
+        response.setInterestRate(app.getInterestRate()); // NUEVO
         response.setStatus(app.getStatus().name());
         response.setApplicationDate(app.getApplicationDate().format(formatter));
         response.setEvaluationDate(

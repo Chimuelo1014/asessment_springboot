@@ -8,18 +8,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
- * RiskEvaluationService - CORREGIDO según enunciado
- * 
- * Reglas:
+ * CORREGIDO según enunciado:
  * - Score: 300-950 (no 300-850)
  * - ALTO RIESGO: 300-500
  * - MEDIO RIESGO: 501-700
  * - BAJO RIESGO: 701-950
- * - Mismo documento = mismo score (determinístico)
+ * - Mismo documento = mismo score (determinístico usando hash)
  */
 @Service
 @RequiredArgsConstructor
@@ -31,18 +28,18 @@ public class RiskEvaluationService {
     public RiskEvaluationResponse evaluateRisk(RiskEvaluationRequest request) {
         log.info("Evaluando riesgo para documento: {}", request.getDocumento());
         
-        // CORREGIDO: Usar documento como seed para consistencia
+        // Usar hash del documento como seed para consistencia
         int seed = request.getDocumento().hashCode();
         Random random = new Random(seed);
         
-        // CORREGIDO: Generar score entre 300 y 950 (no 850)
-        int score = 300 + random.nextInt(651); // 651 para cubrir 300-950
+        // Generar score entre 300 y 950 (651 posibles valores)
+        int score = 300 + random.nextInt(651);
         
-        // CORREGIDO: Determinar nivel según enunciado
+        // Determinar nivel según enunciado
         String nivelRiesgo = determineRiskLevel(score);
         String detalle = generateDetailMessage(score, nivelRiesgo);
         
-        // Métricas
+        // Registrar métrica
         Counter.builder("risk_evaluations_total")
             .tag("nivel_riesgo", nivelRiesgo)
             .register(meterRegistry)
@@ -51,7 +48,6 @@ public class RiskEvaluationService {
         log.info("Evaluación completada - Documento: {}, Score: {}, Nivel: {}", 
             request.getDocumento(), score, nivelRiesgo);
         
-        // CORREGIDO: Respuesta según formato del enunciado
         return RiskEvaluationResponse.builder()
             .documento(request.getDocumento())
             .score(score)
@@ -62,9 +58,9 @@ public class RiskEvaluationService {
 
     /**
      * CORREGIDO según enunciado:
-     * - 300-500 → ALTO RIESGO
-     * - 501-700 → MEDIO RIESGO  
-     * - 701-950 → BAJO RIESGO
+     * - 300-500 → ALTO
+     * - 501-700 → MEDIO  
+     * - 701-950 → BAJO
      */
     private String determineRiskLevel(int score) {
         if (score >= 701) {
@@ -76,14 +72,11 @@ public class RiskEvaluationService {
         }
     }
 
-    /**
-     * CORREGIDO: Generar mensaje de detalle según nivel
-     */
     private String generateDetailMessage(int score, String nivelRiesgo) {
         return switch (nivelRiesgo) {
-            case "BAJO" -> String.format("Excelente historial crediticio (Score: %d). Cliente confiable.", score);
-            case "MEDIO" -> String.format("Historial crediticio moderado (Score: %d). Requiere análisis adicional.", score);
-            case "ALTO" -> String.format("Historial crediticio deficiente (Score: %d). Alto riesgo de impago.", score);
+            case "BAJO" -> String.format("Excelente historial crediticio (Score: %d). Cliente confiable con bajo riesgo de impago.", score);
+            case "MEDIO" -> String.format("Historial crediticio moderado (Score: %d). Requiere análisis adicional antes de aprobar.", score);
+            case "ALTO" -> String.format("Historial crediticio deficiente (Score: %d). Alto riesgo de impago, se recomienda rechazar.", score);
             default -> "No se pudo determinar el nivel de riesgo";
         };
     }

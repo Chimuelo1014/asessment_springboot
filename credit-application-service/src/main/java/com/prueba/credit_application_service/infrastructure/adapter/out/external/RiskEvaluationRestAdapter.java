@@ -14,13 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+
 /**
- * RiskEvaluationRestAdapter - INFRASTRUCTURE ADAPTER
- * 
- * This adapter implements the domain port (RiskEvaluationPort)
- * and communicates with an external REST service.
- * 
- * It belongs to the INFRASTRUCTURE layer.
+ * ACTUALIZADO para trabajar con campos en español
  */
 @Component
 public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
@@ -48,12 +45,11 @@ public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
         Timer.Sample sample = Timer.start(meterRegistry);
 
         try {
-            // Build request DTO
+            // Build request DTO con campos en español
             RiskEvaluationExternalRequest request = new RiskEvaluationExternalRequest();
-            request.setDocument(document);
-            request.setFullName(fullName);
-            request.setRequestedAmount(requestedAmount);
-            request.setMonthlyIncome(monthlyIncome);
+            request.setDocumento(document);
+            request.setMonto(requestedAmount);
+            request.setPlazo(12); // Plazo por defecto, podría venir como parámetro
 
             String url = riskServiceUrl + "/api/v1/risk-evaluation";
 
@@ -99,16 +95,32 @@ public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
     }
 
     /**
-     * Convert external DTO to domain object
-     * This ensures the domain remains independent of external APIs
+     * ACTUALIZADO: Mapea nivel de riesgo en español a enum
      */
     private RiskEvaluation mapToDomain(RiskEvaluationExternalResponse response) {
         RiskEvaluation riskEvaluation = new RiskEvaluation();
         riskEvaluation.setScore(response.getScore());
-        riskEvaluation.setRiskLevel(RiskLevel.valueOf(response.getRiskLevel()));
-        riskEvaluation.setRecommendation(response.getRecommendation());
-        riskEvaluation.setEvaluationMessage(response.getMessage());
-        riskEvaluation.setEvaluationDate(response.getEvaluationDate());
+        
+        // Mapear nivel de riesgo (español → enum)
+        RiskLevel riskLevel = switch (response.getNivelRiesgo()) {
+            case "BAJO" -> RiskLevel.LOW;
+            case "MEDIO" -> RiskLevel.MEDIUM;
+            case "ALTO" -> RiskLevel.HIGH;
+            default -> RiskLevel.MEDIUM; // Default fallback
+        };
+        riskEvaluation.setRiskLevel(riskLevel);
+        
+        // Determinar recomendación basada en nivel
+        String recommendation = switch (riskLevel) {
+            case LOW -> "APPROVED";
+            case MEDIUM -> "REVIEW";
+            case HIGH -> "REJECTED";
+        };
+        riskEvaluation.setRecommendation(recommendation);
+        
+        riskEvaluation.setEvaluationMessage(response.getDetalle());
+        riskEvaluation.setEvaluationDate(LocalDateTime.now());
+        
         return riskEvaluation;
     }
 }

@@ -5,14 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * RiskEvaluationExternalRequest - DTO for external risk service
+ * CORREGIDO - Campos en español según enunciado
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationExternalRequest {
-    private String document;
-    private String fullName;
-    private Double requestedAmount;
-    private Double monthlyIncome;
+    private String documento;
+    private Double monto;
+    private Integer plazo;
 }

@@ -4,19 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /**
- * RiskEvaluationExternalResponse - DTO from external risk service
+ * CORREGIDO - Campos en español según enunciado
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationExternalResponse {
-    private String document;
+    private String documento;
     private Integer score;
-    private String riskLevel;
-    private String recommendation;
-    private String message;
-    private LocalDateTime evaluationDate;
+    private String nivelRiesgo;  // BAJO, MEDIO, ALTO
+    private String detalle;
 }

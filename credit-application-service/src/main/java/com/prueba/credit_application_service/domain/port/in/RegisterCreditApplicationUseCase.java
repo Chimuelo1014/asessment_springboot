@@ -9,6 +9,7 @@ public interface RegisterCreditApplicationUseCase {
     record CreditApplicationCommand(
             Long affiliateId,
             Double requestedAmount,
-            Integer termMonths) {
+            Integer termMonths,
+            Double interestRate) { // NUEVO campo
     }
 }

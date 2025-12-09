@@ -21,11 +21,9 @@ public class CreditApplication {
     private String analystComments;
     private RiskEvaluation riskEvaluation;
 
-    // Default constructor
     public CreditApplication() {
     }
 
-    // Full constructor
     public CreditApplication(Long id, Affiliate affiliate, Double requestedAmount,
             Integer termMonths, Double interestRate, CreditApplicationStatus status,
             LocalDateTime applicationDate) {
@@ -38,12 +36,9 @@ public class CreditApplication {
         this.applicationDate = applicationDate;
     }
 
-    // BUSINESS LOGIC METHODS
-
     /**
      * Calculates the monthly payment including interest
      * Using simple interest formula: P * (1 + r*t) / t
-     * where P = principal, r = monthly rate, t = term in months
      */
     public Double calculateMonthlyPayment() {
         if (requestedAmount == null || termMonths == null || termMonths == 0) {
@@ -51,14 +46,10 @@ public class CreditApplication {
         }
         
         if (interestRate == null || interestRate == 0.0) {
-            // Simple calculation without interest
             return requestedAmount / termMonths;
         }
         
-        // Convert annual rate to monthly rate
         double monthlyRate = interestRate / 12 / 100;
-        
-        // Calculate total amount with interest (simple interest)
         double totalAmount = requestedAmount * (1 + (monthlyRate * termMonths));
         
         return totalAmount / termMonths;
@@ -95,93 +86,40 @@ public class CreditApplication {
     }
 
     // GETTERS AND SETTERS
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Affiliate getAffiliate() {
-        return affiliate;
-    }
-
-    public void setAffiliate(Affiliate affiliate) {
-        this.affiliate = affiliate;
-    }
-
-    public Double getRequestedAmount() {
-        return requestedAmount;
-    }
-
-    public void setRequestedAmount(Double requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
-
-    public Integer getTermMonths() {
-        return termMonths;
-    }
-
-    public void setTermMonths(Integer termMonths) {
-        this.termMonths = termMonths;
-    }
-
-    public Double getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(Double interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public CreditApplicationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(CreditApplicationStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getApplicationDate() {
-        return applicationDate;
-    }
-
-    public void setApplicationDate(LocalDateTime applicationDate) {
-        this.applicationDate = applicationDate;
-    }
-
-    public LocalDateTime getEvaluationDate() {
-        return evaluationDate;
-    }
-
-    public void setEvaluationDate(LocalDateTime evaluationDate) {
-        this.evaluationDate = evaluationDate;
-    }
-
-    public String getAnalystComments() {
-        return analystComments;
-    }
-
-    public void setAnalystComments(String analystComments) {
-        this.analystComments = analystComments;
-    }
-
-    public RiskEvaluation getRiskEvaluation() {
-        return riskEvaluation;
-    }
-
-    public void setRiskEvaluation(RiskEvaluation riskEvaluation) {
-        this.riskEvaluation = riskEvaluation;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Affiliate getAffiliate() { return affiliate; }
+    public void setAffiliate(Affiliate affiliate) { this.affiliate = affiliate; }
+    
+    public Double getRequestedAmount() { return requestedAmount; }
+    public void setRequestedAmount(Double requestedAmount) { this.requestedAmount = requestedAmount; }
+    
+    public Integer getTermMonths() { return termMonths; }
+    public void setTermMonths(Integer termMonths) { this.termMonths = termMonths; }
+    
+    public Double getInterestRate() { return interestRate; }
+    public void setInterestRate(Double interestRate) { this.interestRate = interestRate; }
+    
+    public CreditApplicationStatus getStatus() { return status; }
+    public void setStatus(CreditApplicationStatus status) { this.status = status; }
+    
+    public LocalDateTime getApplicationDate() { return applicationDate; }
+    public void setApplicationDate(LocalDateTime applicationDate) { this.applicationDate = applicationDate; }
+    
+    public LocalDateTime getEvaluationDate() { return evaluationDate; }
+    public void setEvaluationDate(LocalDateTime evaluationDate) { this.evaluationDate = evaluationDate; }
+    
+    public String getAnalystComments() { return analystComments; }
+    public void setAnalystComments(String analystComments) { this.analystComments = analystComments; }
+    
+    public RiskEvaluation getRiskEvaluation() { return riskEvaluation; }
+    public void setRiskEvaluation(RiskEvaluation riskEvaluation) { this.riskEvaluation = riskEvaluation; }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         CreditApplication that = (CreditApplication) o;
         return Objects.equals(id, that.id);
     }
