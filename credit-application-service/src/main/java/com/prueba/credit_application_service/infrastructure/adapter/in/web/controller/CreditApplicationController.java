@@ -59,12 +59,11 @@ public class CreditApplicationController {
                 .register(meterRegistry)
                 .increment();
 
-        RegisterCreditApplicationUseCase.CreditApplicationCommand command = 
-            new RegisterCreditApplicationUseCase.CreditApplicationCommand(
+        RegisterCreditApplicationUseCase.CreditApplicationCommand command = new RegisterCreditApplicationUseCase.CreditApplicationCommand(
                 request.getAffiliateId(),
                 request.getRequestedAmount(),
                 request.getTermMonths(),
-                request.getInterestRate()); // NUEVO
+                request.getInterestRate());
 
         CreditApplication application = registerUseCase.register(command);
 
@@ -161,7 +160,7 @@ public class CreditApplicationController {
         response.setAffiliateName(app.getAffiliate().getFullName());
         response.setRequestedAmount(app.getRequestedAmount());
         response.setTermMonths(app.getTermMonths());
-        response.setInterestRate(app.getInterestRate()); // NUEVO
+        response.setInterestRate(app.getInterestRate());
         response.setStatus(app.getStatus().name());
         response.setApplicationDate(app.getApplicationDate().format(formatter));
         response.setEvaluationDate(

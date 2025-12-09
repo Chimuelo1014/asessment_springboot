@@ -36,12 +36,11 @@ class UpdateAffiliateServiceTest {
         // Given
         Affiliate existing = createAffiliate();
         UpdateAffiliateCommand command = new UpdateAffiliateCommand(
-            1L, "Jane Smith", "jane@example.com", "555-9999", 6000.0
-        );
+                1L, "Jane Smith", "jane@example.com", "555-9999", 6000.0);
 
         when(affiliateRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(affiliateRepository.save(any(Affiliate.class)))
-            .thenAnswer(inv -> inv.getArgument(0));
+                .thenAnswer(inv -> inv.getArgument(0));
 
         // When
         Affiliate result = updateService.update(command);
@@ -57,13 +56,12 @@ class UpdateAffiliateServiceTest {
     void shouldThrowExceptionWhenAffiliateNotFound() {
         // Given
         UpdateAffiliateCommand command = new UpdateAffiliateCommand(
-            999L, "Jane Smith", "jane@example.com", null, null
-        );
+                999L, "Jane Smith", "jane@example.com", null, null);
         when(affiliateRepository.findById(999L)).thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> updateService.update(command))
-            .isInstanceOf(AffiliateNotFoundException.class);
+                .isInstanceOf(AffiliateNotFoundException.class);
     }
 
     @Test
@@ -71,17 +69,16 @@ class UpdateAffiliateServiceTest {
         // Given
         Affiliate existing = createAffiliate();
         UpdateAffiliateCommand command = new UpdateAffiliateCommand(
-            1L, null, null, null, null
-        );
+                1L, null, null, null, null);
 
         when(affiliateRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(affiliateRepository.save(any(Affiliate.class)))
-            .thenAnswer(inv -> inv.getArgument(0));
+                .thenAnswer(inv -> inv.getArgument(0));
 
         // When
         Affiliate result = updateService.update(command);
 
-        // Then - valores originales deben mantenerse
+        // Then - original values should remain unchanged
         assertThat(result.getFullName()).isEqualTo("John Doe");
         assertThat(result.getEmail()).isEqualTo("john@example.com");
     }

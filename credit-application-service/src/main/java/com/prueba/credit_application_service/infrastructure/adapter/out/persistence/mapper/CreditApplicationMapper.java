@@ -2,64 +2,33 @@ package com.prueba.credit_application_service.infrastructure.adapter.out.persist
 
 import com.prueba.credit_application_service.domain.model.CreditApplication;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.CreditApplicationEntity;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class CreditApplicationMapper {
+/**
+ * CreditApplicationMapper - Maps between domain and entity using MapStruct
+ */
+@Mapper(componentModel = "spring", uses = { AffiliateMapper.class, RiskEvaluationMapper.class })
+public interface CreditApplicationMapper {
 
-    private final AffiliateMapper affiliateMapper;
-    private final RiskEvaluationMapper riskEvaluationMapper;
+    /**
+     * Convert entity to domain model
+     * 
+     * @param entity the credit application entity
+     * @return the credit application domain model
+     */
+    @Mapping(target = "affiliate", source = "affiliate")
+    @Mapping(target = "riskEvaluation", source = "riskEvaluation")
+    CreditApplication toDomain(CreditApplicationEntity entity);
 
-    public CreditApplicationMapper(@Lazy AffiliateMapper affiliateMapper,
-            @Lazy RiskEvaluationMapper riskEvaluationMapper) {
-        this.affiliateMapper = affiliateMapper;
-        this.riskEvaluationMapper = riskEvaluationMapper;
-    }
-
-    public CreditApplication toDomain(CreditApplicationEntity entity) {
-        if (entity == null) return null;
-
-        CreditApplication domain = new CreditApplication();
-        domain.setId(entity.getId());
-        domain.setRequestedAmount(entity.getRequestedAmount());
-        domain.setTermMonths(entity.getTermMonths());
-        domain.setInterestRate(entity.getInterestRate()); // NUEVO
-        domain.setStatus(entity.getStatus());
-        domain.setApplicationDate(entity.getApplicationDate());
-        domain.setEvaluationDate(entity.getEvaluationDate());
-        domain.setAnalystComments(entity.getAnalystComments());
-
-        // MEJORADO: Usar el mapper completo en lugar de crear un objeto parcial
-        if (entity.getAffiliate() != null) {
-            domain.setAffiliate(affiliateMapper.toDomain(entity.getAffiliate()));
-        }
-
-        if (entity.getRiskEvaluation() != null) {
-            domain.setRiskEvaluation(riskEvaluationMapper.toDomain(entity.getRiskEvaluation()));
-        }
-
-        return domain;
-    }
-
-    public CreditApplicationEntity toEntity(CreditApplication domain) {
-        if (domain == null) return null;
-
-        CreditApplicationEntity entity = new CreditApplicationEntity();
-        entity.setId(domain.getId());
-        entity.setRequestedAmount(domain.getRequestedAmount());
-        entity.setTermMonths(domain.getTermMonths());
-        entity.setInterestRate(domain.getInterestRate()); // NUEVO
-        entity.setStatus(domain.getStatus());
-        entity.setApplicationDate(domain.getApplicationDate());
-        entity.setEvaluationDate(domain.getEvaluationDate());
-        entity.setAnalystComments(domain.getAnalystComments());
-
-        // MEJORADO: Usar el mapper completo
-        if (domain.getAffiliate() != null) {
-            entity.setAffiliate(affiliateMapper.toEntity(domain.getAffiliate()));
-        }
-
-        return entity;
-    }
+    /**
+     * Convert domain model to entity
+     * 
+     * @param domain the credit application domain model
+     * @return the credit application entity
+     */
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "affiliate", source = "affiliate")
+    @Mapping(target = "riskEvaluation", ignore = true) // Risk evaluation is set separately
+    CreditApplicationEntity toEntity(CreditApplication domain);
 }

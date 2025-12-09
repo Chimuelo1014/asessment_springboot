@@ -7,18 +7,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * CORREGIDO según enunciado - campos en español
+ * Risk Evaluation Request DTO
+ * Contains the data needed to evaluate credit risk for a potential borrower
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationRequest {
-    @NotBlank(message = "Documento es requerido")
-    private String documento;
     
-    @Positive(message = "Monto debe ser positivo")
-    private Double monto;
+    /**
+     * Applicant's identification document number
+     */
+    @NotBlank(message = "Document is required")
+    private String document;
     
-    @Positive(message = "Plazo debe ser positivo")
-    private Integer plazo;
+    /**
+     * Requested credit amount
+     */
+    @Positive(message = "Amount must be positive")
+    private Double amount;
+    
+    /**
+     * Credit term in months
+     */
+    @Positive(message = "Term must be positive")
+    private Integer term;
 }

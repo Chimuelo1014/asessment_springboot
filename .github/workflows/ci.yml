@@ -1,0 +1,125 @@
+name: CoopCredit CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-credit-service:
+    runs-on: ubuntu-latest
+    name: Test Credit Application Service
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Run Unit Tests
+        working-directory: ./credit-application-service
+        run: ./mvnw clean test -Dtest='!*IntegrationTest,!*ApplicationTests'
+      
+      - name: Generate Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Credit Service Test Results
+          path: credit-application-service/target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: true
+
+  test-risk-service:
+    runs-on: ubuntu-latest
+    name: Test Risk Central Mock Service
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Run Tests
+        working-directory: ./risk-central-mock-service
+        run: ./mvnw clean test
+
+  build-credit-service:
+    runs-on: ubuntu-latest
+    name: Build Credit Application Service
+    needs: test-credit-service
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Build with Maven
+        working-directory: ./credit-application-service
+        run: ./mvnw clean package -DskipTests
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: credit-application-service-jar
+          path: credit-application-service/target/*.jar
+
+  build-risk-service:
+    runs-on: ubuntu-latest
+    name: Build Risk Central Service
+    needs: test-risk-service
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Build with Maven
+        working-directory: ./risk-central-mock-service
+        run: ./mvnw clean package -DskipTests
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: risk-central-service-jar
+          path: risk-central-mock-service/target/*.jar
+
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality Check
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Check Code Style
+        working-directory: ./credit-application-service
+        run: ./mvnw checkstyle:check || true
+      
+      - name: Run SpotBugs
+        working-directory: ./credit-application-service
+        run: ./mvnw spotbugs:check || true

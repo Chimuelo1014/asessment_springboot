@@ -217,6 +217,19 @@ Response:
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
+### ⚠️ Role Assignment Security
+
+> **Production-Ready Implementation**
+> 
+> All new user registrations via the frontend are assigned the `ROLE_AFILIADO` role by default. This is the proper security implementation for production environments.
+> 
+> **Role Assignment for Elevated Privileges:**
+> - `ROLE_ANALISTA` and `ROLE_ADMIN` roles can only be assigned by administrators
+> - Default test users (admin, analyst) are pre-configured in the database via Flyway migrations
+> - In production, an administrative endpoint would be provided for role management
+>
+> This follows security best practices where users cannot self-assign privileged roles.
+
 ---
 
 ## 📡 API Endpoints

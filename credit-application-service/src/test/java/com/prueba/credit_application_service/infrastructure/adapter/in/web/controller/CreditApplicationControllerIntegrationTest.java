@@ -12,36 +12,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Integration tests for CreditApplicationController using H2 in-memory database
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@ActiveProfiles("test")
 class CreditApplicationControllerIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-        .withDatabaseName("test_db")
-        .withUsername("test")
-        .withPassword("test");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("external.risk-service.url", () -> "http://localhost:8081");
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -65,7 +50,7 @@ class CreditApplicationControllerIntegrationTest {
         affiliate.setMonthlySalary(6000.0);
         affiliate.setStatus(AffiliateStatus.ACTIVE);
         affiliate.setAffiliationDate(LocalDate.now().minusYears(1));
-        
+
         Affiliate saved = affiliateRepository.save(affiliate);
         affiliateId = saved.getId();
     }
@@ -83,10 +68,10 @@ class CreditApplicationControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/credit-applications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.affiliateId").value(affiliateId))
-            .andExpect(jsonPath("$.requestedAmount").value(15000.0))
-            .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.affiliateId").value(affiliateId))
+                .andExpect(jsonPath("$.requestedAmount").value(15000.0))
+                .andExpect(jsonPath("$.status").value("PENDING"));
     }
 
     @Test
@@ -94,8 +79,8 @@ class CreditApplicationControllerIntegrationTest {
     void shouldGetAllApplications() throws Exception {
         // When & Then
         mockMvc.perform(get("/api/v1/credit-applications"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -103,7 +88,7 @@ class CreditApplicationControllerIntegrationTest {
     void shouldGetPendingApplications() throws Exception {
         // When & Then
         mockMvc.perform(get("/api/v1/credit-applications/pending"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
     }
 }

@@ -17,7 +17,10 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 
 /**
- * ACTUALIZADO para trabajar con campos en español
+ * Risk Evaluation REST Adapter
+ * 
+ * Output adapter that communicates with the external risk evaluation service.
+ * Implements the RiskEvaluationPort interface from the domain layer.
  */
 @Component
 public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
@@ -45,11 +48,11 @@ public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
         Timer.Sample sample = Timer.start(meterRegistry);
 
         try {
-            // Build request DTO con campos en español
+            // Build request DTO with English field names
             RiskEvaluationExternalRequest request = new RiskEvaluationExternalRequest();
-            request.setDocumento(document);
-            request.setMonto(requestedAmount);
-            request.setPlazo(12); // Plazo por defecto, podría venir como parámetro
+            request.setDocument(document);
+            request.setAmount(requestedAmount);
+            request.setTerm(12); // Default term, could be parameterized
 
             String url = riskServiceUrl + "/api/v1/risk-evaluation";
 
@@ -95,22 +98,25 @@ public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
     }
 
     /**
-     * ACTUALIZADO: Mapea nivel de riesgo en español a enum
+     * Maps external service response to domain model
+     * 
+     * @param response External service response
+     * @return Domain RiskEvaluation object
      */
     private RiskEvaluation mapToDomain(RiskEvaluationExternalResponse response) {
         RiskEvaluation riskEvaluation = new RiskEvaluation();
         riskEvaluation.setScore(response.getScore());
         
-        // Mapear nivel de riesgo (español → enum)
-        RiskLevel riskLevel = switch (response.getNivelRiesgo()) {
-            case "BAJO" -> RiskLevel.LOW;
-            case "MEDIO" -> RiskLevel.MEDIUM;
-            case "ALTO" -> RiskLevel.HIGH;
+        // Map risk level (English enum mapping)
+        RiskLevel riskLevel = switch (response.getRiskLevel()) {
+            case "LOW" -> RiskLevel.LOW;
+            case "MEDIUM" -> RiskLevel.MEDIUM;
+            case "HIGH" -> RiskLevel.HIGH;
             default -> RiskLevel.MEDIUM; // Default fallback
         };
         riskEvaluation.setRiskLevel(riskLevel);
         
-        // Determinar recomendación basada en nivel
+        // Determine recommendation based on level
         String recommendation = switch (riskLevel) {
             case LOW -> "APPROVED";
             case MEDIUM -> "REVIEW";
@@ -118,7 +124,7 @@ public class RiskEvaluationRestAdapter implements RiskEvaluationPort {
         };
         riskEvaluation.setRecommendation(recommendation);
         
-        riskEvaluation.setEvaluationMessage(response.getDetalle());
+        riskEvaluation.setEvaluationMessage(response.getDetail());
         riskEvaluation.setEvaluationDate(LocalDateTime.now());
         
         return riskEvaluation;

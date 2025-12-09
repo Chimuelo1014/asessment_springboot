@@ -9,6 +9,7 @@ import com.prueba.credit_application_service.infrastructure.adapter.out.persiste
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.mapper.RiskEvaluationMapper;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.repository.CreditApplicationJpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
     }
 
     @Override
+    @Transactional
     public CreditApplication save(CreditApplication creditApplication) {
         // Convert domain to entity
         CreditApplicationEntity entity = mapper.toEntity(creditApplication);
@@ -61,7 +63,8 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
 
     @Override
     public List<CreditApplication> findAll() {
-        // Usar la versión que trae affiliate y riskEvaluation para evitar LazyInitializationException
+        // Use version with affiliate and riskEvaluation to avoid
+        // LazyInitializationException
         return jpaRepository.findAllWithDetails().stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -69,7 +72,7 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
 
     @Override
     public List<CreditApplication> findByAffiliateId(Long affiliateId) {
-        // el repo ya tiene JOIN FETCH para affiliate
+        // Repository already has JOIN FETCH for affiliate
         return jpaRepository.findByAffiliateId(affiliateId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -77,7 +80,7 @@ public class CreditApplicationRepositoryAdapter implements CreditApplicationRepo
 
     @Override
     public List<CreditApplication> findByStatus(CreditApplicationStatus status) {
-        // usar la versión con JOIN FETCH definida en el repo
+        // Use version with JOIN FETCH defined in repository
         return jpaRepository.findByStatusWithAffiliate(status).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

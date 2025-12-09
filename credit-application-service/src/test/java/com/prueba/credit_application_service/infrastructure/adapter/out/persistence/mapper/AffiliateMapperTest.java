@@ -3,21 +3,24 @@ package com.prueba.credit_application_service.infrastructure.adapter.out.persist
 import com.prueba.credit_application_service.domain.model.Affiliate;
 import com.prueba.credit_application_service.domain.model.enums.AffiliateStatus;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.AffiliateEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Test for AffiliateMapper (MapStruct generated)
+ */
+@SpringBootTest
+@ActiveProfiles("test")
 class AffiliateMapperTest {
 
-    private AffiliateMapper mapper;
-
-    @BeforeEach
-    void setUp() {
-        mapper = new AffiliateMapper();
-    }
+    @Autowired
+    private AffiliateMapper affiliateMapper;
 
     @Test
     void shouldMapEntityToDomain() {
@@ -33,7 +36,7 @@ class AffiliateMapperTest {
         entity.setAffiliationDate(LocalDate.now());
 
         // When
-        Affiliate domain = mapper.toDomain(entity);
+        Affiliate domain = affiliateMapper.toDomain(entity);
 
         // Then
         assertThat(domain).isNotNull();
@@ -56,7 +59,7 @@ class AffiliateMapperTest {
         domain.setAffiliationDate(LocalDate.now());
 
         // When
-        AffiliateEntity entity = mapper.toEntity(domain);
+        AffiliateEntity entity = affiliateMapper.toEntity(domain);
 
         // Then
         assertThat(entity).isNotNull();
@@ -66,11 +69,11 @@ class AffiliateMapperTest {
 
     @Test
     void shouldHandleNullEntity() {
-        assertThat(mapper.toDomain(null)).isNull();
+        assertThat(affiliateMapper.toDomain(null)).isNull();
     }
 
     @Test
     void shouldHandleNullDomain() {
-        assertThat(mapper.toEntity(null)).isNull();
+        assertThat(affiliateMapper.toEntity(null)).isNull();
     }
 }

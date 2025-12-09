@@ -23,7 +23,7 @@ public class UseCaseConfig {
         return new GetAffiliateService(affiliateRepository);
     }
 
-    @Bean // NUEVO
+    @Bean
     public UpdateAffiliateUseCase updateAffiliateUseCase(
             AffiliateRepositoryPort affiliateRepository) {
         return new UpdateAffiliateService(affiliateRepository);

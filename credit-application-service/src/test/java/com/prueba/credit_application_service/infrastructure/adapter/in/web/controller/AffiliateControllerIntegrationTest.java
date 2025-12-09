@@ -8,34 +8,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Integration tests for AffiliateController using H2 in-memory database
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@ActiveProfiles("test")
 class AffiliateControllerIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-        .withDatabaseName("test_db")
-        .withUsername("test")
-        .withPassword("test");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("external.risk-service.url", () -> "http://localhost:8081");
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,10 +43,10 @@ class AffiliateControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/affiliates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.document").value("987654321"))
-            .andExpect(jsonPath("$.fullName").value("Jane Doe"))
-            .andExpect(jsonPath("$.status").value("ACTIVE"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.document").value("987654321"))
+                .andExpect(jsonPath("$.fullName").value("Jane Doe"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
@@ -78,14 +63,14 @@ class AffiliateControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/affiliates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         // When & Then - Try to create again with same document
         mockMvc.perform(post("/api/v1/affiliates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isConflict())
-            .andExpect(jsonPath("$.title").value("Conflict Detected"));
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("Conflict Detected"));
     }
 
     @Test
@@ -102,6 +87,6 @@ class AffiliateControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/affiliates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 }

@@ -2,41 +2,27 @@ package com.prueba.credit_application_service.infrastructure.adapter.out.persist
 
 import com.prueba.credit_application_service.domain.model.RiskEvaluation;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.RiskEvaluationEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 /**
- * RiskEvaluationMapper - Maps between domain and entity
+ * RiskEvaluationMapper - Maps between domain and entity using MapStruct
  */
-@Component
-public class RiskEvaluationMapper {
+@Mapper(componentModel = "spring")
+public interface RiskEvaluationMapper {
 
-    public RiskEvaluation toDomain(RiskEvaluationEntity entity) {
-        if (entity == null)
-            return null;
+    /**
+     * Convert entity to domain model
+     * 
+     * @param entity the risk evaluation entity
+     * @return the risk evaluation domain model
+     */
+    RiskEvaluation toDomain(RiskEvaluationEntity entity);
 
-        RiskEvaluation domain = new RiskEvaluation();
-        domain.setId(entity.getId());
-        domain.setScore(entity.getScore());
-        domain.setRiskLevel(entity.getRiskLevel());
-        domain.setRecommendation(entity.getRecommendation());
-        domain.setEvaluationMessage(entity.getEvaluationMessage());
-        domain.setEvaluationDate(entity.getEvaluationDate());
-
-        return domain;
-    }
-
-    public RiskEvaluationEntity toEntity(RiskEvaluation domain) {
-        if (domain == null)
-            return null;
-
-        RiskEvaluationEntity entity = new RiskEvaluationEntity();
-        entity.setId(domain.getId());
-        entity.setScore(domain.getScore());
-        entity.setRiskLevel(domain.getRiskLevel());
-        entity.setRecommendation(domain.getRecommendation());
-        entity.setEvaluationMessage(domain.getEvaluationMessage());
-        entity.setEvaluationDate(domain.getEvaluationDate());
-
-        return entity;
-    }
+    /**
+     * Convert domain model to entity
+     * 
+     * @param domain the risk evaluation domain model
+     * @return the risk evaluation entity
+     */
+    RiskEvaluationEntity toEntity(RiskEvaluation domain);
 }

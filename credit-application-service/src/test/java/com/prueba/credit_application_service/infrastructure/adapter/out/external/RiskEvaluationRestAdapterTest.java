@@ -28,23 +28,22 @@ class RiskEvaluationRestAdapterTest {
     void setUp() {
         meterRegistry = new SimpleMeterRegistry();
         adapter = new RiskEvaluationRestAdapter(
-            restTemplate,
-            meterRegistry,
-            "http://localhost:8081"
-        );
+                restTemplate,
+                meterRegistry,
+                "http://localhost:8081");
     }
 
     @Test
     void shouldCallExternalServiceSuccessfully() {
         // Given
         RiskEvaluationExternalResponse mockResponse = new RiskEvaluationExternalResponse();
-        mockResponse.setDocumento("123456789");
+        mockResponse.setDocument("123456789");
         mockResponse.setScore(750);
-        mockResponse.setNivelRiesgo("BAJO");
-        mockResponse.setDetalle("Test evaluation");
+        mockResponse.setRiskLevel("LOW");
+        mockResponse.setDetail("Test evaluation");
 
         when(restTemplate.postForObject(anyString(), any(), eq(RiskEvaluationExternalResponse.class)))
-            .thenReturn(mockResponse);
+                .thenReturn(mockResponse);
 
         // When
         RiskEvaluation result = adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0);
@@ -59,26 +58,25 @@ class RiskEvaluationRestAdapterTest {
     void shouldHandleExternalServiceFailure() {
         // Given
         when(restTemplate.postForObject(anyString(), any(), eq(RiskEvaluationExternalResponse.class)))
-            .thenThrow(new RuntimeException("Service unavailable"));
+                .thenThrow(new RuntimeException("Service unavailable"));
 
         // When & Then
-        assertThatThrownBy(() -> 
-            adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Failed to evaluate risk");
+        assertThatThrownBy(() -> adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Failed to evaluate risk");
     }
 
     @Test
     void shouldMapLowRiskCorrectly() {
         // Given
         RiskEvaluationExternalResponse mockResponse = new RiskEvaluationExternalResponse();
-        mockResponse.setDocumento("123456789");
+        mockResponse.setDocument("123456789");
         mockResponse.setScore(800);
-        mockResponse.setNivelRiesgo("BAJO");
-        mockResponse.setDetalle("Low risk");
+        mockResponse.setRiskLevel("LOW");
+        mockResponse.setDetail("Low risk");
 
         when(restTemplate.postForObject(anyString(), any(), eq(RiskEvaluationExternalResponse.class)))
-            .thenReturn(mockResponse);
+                .thenReturn(mockResponse);
 
         // When
         RiskEvaluation result = adapter.evaluateRisk("123456789", "John Doe", 10000.0, 5000.0);

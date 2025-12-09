@@ -8,36 +8,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Integration tests for Security configuration using H2 in-memory database
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@ActiveProfiles("test")
 class SecurityIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-        .withDatabaseName("test_db")
-        .withUsername("test")
-        .withPassword("test");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("external.risk-service.url", () -> "http://localhost:8081");
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,41 +33,41 @@ class SecurityIntegrationTest {
     @Test
     void shouldDenyAccessWithoutToken() throws Exception {
         mockMvc.perform(get("/api/v1/affiliates"))
-            .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "AFILIADO")
     void shouldDenyAffiliateAccessToAnalystEndpoint() throws Exception {
         mockMvc.perform(get("/api/v1/credit-applications"))
-            .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ANALISTA")
     void shouldAllowAnalystAccessToApplications() throws Exception {
         mockMvc.perform(get("/api/v1/credit-applications"))
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
     void shouldGenerateValidJwtToken() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-            .username("admin")
-            .password("password")
-            .build();
+                .username("admin")
+                .password("password")
+                .build();
 
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.token").exists())
-            .andExpect(jsonPath("$.username").value("admin"))
-            .andReturn();
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.username").value("admin"))
+                .andReturn();
 
         String token = objectMapper.readTree(result.getResponse().getContentAsString())
-            .get("token").asText();
-        
+                .get("token").asText();
+
         assertThat(token).isNotBlank();
     }
 
@@ -90,9 +75,9 @@ class SecurityIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     void shouldAllowAdminAccessToAllEndpoints() throws Exception {
         mockMvc.perform(get("/api/v1/affiliates"))
-            .andExpect(status().isOk());
-        
+                .andExpect(status().isOk());
+
         mockMvc.perform(get("/api/v1/credit-applications"))
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 }

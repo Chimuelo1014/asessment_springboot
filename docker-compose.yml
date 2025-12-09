@@ -1,7 +1,31 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # ==================== API Gateway ====================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: coopcredit-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CREDIT_APP_URL=http://credit-application-service:8080
+      - RISK_SERVICE_URL=http://risk-central-mock-service:8081
+    depends_on:
+      - credit-application-service
+      - risk-central-mock-service
+    networks:
+      - coopcredit-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8090/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================== Database ====================
   db:
     image: postgres:16-alpine
     container_name: coopcredit-db

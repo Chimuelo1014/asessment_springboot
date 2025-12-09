@@ -6,16 +6,36 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * CORREGIDO según enunciado
- * Formato: { "documento", "score", "nivelRiesgo", "detalle" }
+ * Risk Evaluation Response DTO
+ * Contains the risk assessment results for a credit application
+ * 
+ * Format: { "document", "score", "riskLevel", "detail" }
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationResponse {
-    private String documento;
-    private Integer score;        // 300-950
-    private String nivelRiesgo;   // BAJO, MEDIO, ALTO
-    private String detalle;
+    
+    /**
+     * Applicant's identification document number
+     */
+    private String document;
+    
+    /**
+     * Credit score (300-950)
+     * Higher scores indicate lower risk
+     */
+    private Integer score;
+    
+    /**
+     * Risk level classification
+     * Possible values: LOW, MEDIUM, HIGH
+     */
+    private String riskLevel;
+    
+    /**
+     * Detailed explanation of the risk assessment
+     */
+    private String detail;
 }

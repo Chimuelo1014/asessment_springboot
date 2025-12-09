@@ -13,22 +13,28 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleGenericException(Exception ex) {
+    public ResponseEntity<ProblemDetail> handleGenericException(Exception ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         problemDetail.setTitle("Internal Server Error");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("traceId", UUID.randomUUID().toString());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ProblemDetail> handleValidationExceptions(
+            MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -39,7 +45,9 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST, "Validation failed");
         problemDetail.setTitle("Validation Error");
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("traceId", UUID.randomUUID().toString());
         problemDetail.setProperty("errors", errors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
@@ -49,23 +57,29 @@ public class GlobalExceptionHandler {
             AffiliateNotFoundException.class,
             CreditApplicationNotFoundException.class
     })
-    public ResponseEntity<ProblemDetail> handleNotFoundException(DomainException ex) {
+    public ResponseEntity<ProblemDetail> handleNotFoundException(
+            DomainException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Resource Not Found");
         problemDetail.setType(URI.create("https://example.com/errors/not-found"));
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("traceId", UUID.randomUUID().toString());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
     @ExceptionHandler(DuplicateDocumentException.class)
-    public ResponseEntity<ProblemDetail> handleDuplicateException(DuplicateDocumentException ex) {
+    public ResponseEntity<ProblemDetail> handleDuplicateException(
+            DuplicateDocumentException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Conflict Detected");
         problemDetail.setType(URI.create("https://example.com/errors/conflict"));
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("traceId", UUID.randomUUID().toString());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
@@ -77,12 +91,15 @@ public class GlobalExceptionHandler {
             UnaffordablePaymentException.class,
             DomainException.class // Catch-all for other domain exceptions
     })
-    public ResponseEntity<ProblemDetail> handleBusinessRuleExceptions(DomainException ex) {
+    public ResponseEntity<ProblemDetail> handleBusinessRuleExceptions(
+            DomainException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST, ex.getMessage());
         problemDetail.setTitle("Business Rule Violation");
         problemDetail.setType(URI.create("https://example.com/errors/business-rule"));
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("traceId", UUID.randomUUID().toString());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }

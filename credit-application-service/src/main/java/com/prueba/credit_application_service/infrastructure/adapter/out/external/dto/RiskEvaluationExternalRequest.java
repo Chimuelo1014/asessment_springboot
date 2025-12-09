@@ -5,13 +5,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * CORREGIDO - Campos en español según enunciado
+ * External Risk Evaluation Request DTO
+ * 
+ * Data Transfer Object for communicating with the external risk service.
+ * All fields in English to match the corrected risk service API.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiskEvaluationExternalRequest {
-    private String documento;
-    private Double monto;
-    private Integer plazo;
+    
+    /**
+     * Applicant's identification document number
+     */
+    private String document;
+    
+    /**
+     * Requested credit amount
+     */
+    private Double amount;
+    
+    /**
+     * Credit term in months
+     */
+    private Integer term;
 }
