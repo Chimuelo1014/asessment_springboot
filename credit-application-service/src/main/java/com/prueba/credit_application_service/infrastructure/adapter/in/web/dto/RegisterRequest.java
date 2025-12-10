@@ -7,6 +7,8 @@ import lombok.Data;
 
 @Data
 @Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class RegisterRequest {
     @NotBlank
     private String username;

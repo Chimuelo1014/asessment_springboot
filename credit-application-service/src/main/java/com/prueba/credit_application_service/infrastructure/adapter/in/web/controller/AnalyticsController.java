@@ -36,6 +36,8 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsService.getStatusDistribution());
     }
 
+    @GetMapping("/approval-rate")
+    @Operation(summary = "Get approval rate")
     public ResponseEntity<ApprovalRateDTO> getApprovalRate() {
         return ResponseEntity.ok(analyticsService.getApprovalRate());
     }

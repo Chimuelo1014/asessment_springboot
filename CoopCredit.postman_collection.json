@@ -171,772 +171,787 @@
                             ]
                         }
                     }
-                },
-                {
-                    "name": "Get All Affiliates",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "pm.test(\"Status code is 200\", function () {",
-                                    "    pm.response.to.have.status(200);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Response is an array\", function () {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    pm.expect(jsonData).to.be.an('array');",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/affiliates",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "affiliates"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Affiliate by ID",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "pm.test(\"Status code is 200\", function () {",
-                                    "    pm.response.to.have.status(200);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Response has complete affiliate data\", function () {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    pm.expect(jsonData).to.have.property('document');",
-                                    "    pm.expect(jsonData).to.have.property('fullName');",
-                                    "    pm.expect(jsonData).to.have.property('monthlySalary');",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/affiliates/{{affiliate_id}}",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "affiliates",
-                                "{{affiliate_id}}"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Affiliate by Document",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/affiliates/document/1017654311",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "affiliates",
-                                "document",
-                                "1017654311"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Update Affiliate",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"email\": \"juan.updated@example.com\",\n  \"phone\": \"3009999999\",\n  \"monthlySalary\": 3500000\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/affiliates/{{affiliate_id}}",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "affiliates",
-                                "{{affiliate_id}}"
-                            ]
-                        }
-                    }
                 }
             ]
         },
         {
-            "name": "Credit Applications",
-            "item": [
+            "name": "2.2 Get All Affiliates",
+            "event": [
                 {
-                    "name": "Create Credit Application",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "pm.test(\"Status code is 201\", function () {",
-                                    "    pm.response.to.have.status(201);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Application created with PENDING status\", function () {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    pm.expect(jsonData.status).to.eql('PENDING');",
-                                    "    pm.environment.set(\"application_id\", jsonData.id);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Calculate expected monthly payment\", function() {",
-                                    "    const amount = 10000000;",
-                                    "    const months = 36;",
-                                    "    const rate = 12.5 / 12 / 100;",
-                                    "    ",
-                                    "    const numerator = rate * Math.pow(1 + rate, months);",
-                                    "    const denominator = Math.pow(1 + rate, months) - 1;",
-                                    "    const payment = amount * (numerator / denominator);",
-                                    "    ",
-                                    "    console.log(\"Expected monthly payment:\", payment);",
-                                    "    pm.expect(payment).to.be.closeTo(334536, 1000);",
-                                    "});"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "if (jsonData.length > 0 && jsonData[0].id) {",
+                            "    pm.environment.set(\"affiliate_id\", jsonData[0].id);",
+                            "    console.log(\"Affiliate ID captured from first item: \" + jsonData[0].id);",
+                            "}"
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 10000000,\n  \"termMonths\": 36,\n  \"interestRate\": 12.5\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/credit-applications",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "credit-applications"
-                            ]
-                        }
+                        "type": "text/javascript"
                     }
                 },
                 {
-                    "name": "Get All Credit Applications",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response is an array\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.be.an('array');",
+                            "});"
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/credit-applications",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "credit-applications"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Credit Application by ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "credit-applications",
-                                "{{application_id}}"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Pending Applications",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/credit-applications/pending",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "credit-applications",
-                                "pending"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get My Applications",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{jwt_token}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/credit-applications/my-applications?affiliateId={{affiliate_id}}",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "credit-applications",
-                                "my-applications"
-                            ],
-                            "query": [
-                                {
-                                    "key": "affiliateId",
-                                    "value": "{{affiliate_id}}"
-                                }
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Evaluate Credit Application",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "pm.test(\"Status code is 200\", function () {",
-                                    "    pm.response.to.have.status(200);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Application evaluated (APPROVED or REJECTED)\", function () {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    pm.expect(jsonData.status).to.be.oneOf(['APPROVED', 'REJECTED', 'PENDING']);",
-                                    "});",
-                                    "",
-                                    "pm.test(\"Risk evaluation present\", function () {",
-                                    "    var jsonData = pm.response.json();",
-                                    "    pm.expect(jsonData).to.have.property('riskEvaluation');",
-                                });"
-                            ],
-                            "type": "text/javascript"
-                        }
-                    }
-                ],
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/evaluate",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "credit-applications",
-                            "{{application_id}}",
-                            "evaluate"
-                        ]
+                        "type": "text/javascript"
                     }
                 }
-            },
-            {
-                "event": [
+            ],
+            "request": {
+                "method": "GET",
+                "header": [
                     {
-                        "listen": "test",
-                        "script": {
-                            "exec": [
-                                "pm.test(\"Status code is 400\", function () {",
-                                "    pm.response.to.have.status(400);",
-                                "});",
-                                "",
-                                "pm.test(\"Error is business rule violation\", function () {",
-                                "    var jsonData = pm.response.json();",
-                                "    pm.expect(jsonData.title).to.eql(\"Business Rule Violation\");",
-                                "    pm.expect(jsonData.detail).to.contain(\"exceeds maximum allowed\");",
-                                "});"
-                            ],
-                            "type": "text/javascript"
-                        }
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
                     }
                 ],
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        },
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
+                "url": {
+                    "raw": "{{base_url}}/api/v1/affiliates",
+                    "host": [
+                        "{{base_url}}"
                     ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 30000000,\n  \"termMonths\": 24,\n  \"interestRate\": 15.0\n}"
-                    },
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/credit-applications",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "credit-applications"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Create Application - High Debt Ratio",
-                "event": [
-                    {
-                        "listen": "test",
-                        "script": {
-                            "exec": [
-                                "pm.test(\"Status code is 400\", function () {",
-                                "    pm.response.to.have.status(400);",
-                                "});",
-                                "",
-                                "pm.test(\"Error is business rule violation\", function () {",
-                                "    var jsonData = pm.response.json();",
-                                "    pm.expect(jsonData.title).to.eql(\"Business Rule Violation\");",
-                                "    pm.expect(jsonData.detail).to.contain(\"exceeds maximum allowed\");",
-                                "});"
-                            ],
-                            "type": "text/javascript"
-                        }
-                    }
-                ],
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        },
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 15000000,\n  \"termMonths\": 12,\n  \"interestRate\": 18.0\n}"
-                    },
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/credit-applications",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "credit-applications"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Approve Application Manually",
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        },
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": "{\n  \"comments\": \"Approved manually by analyst\"\n}"
-                    },
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/approve",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "credit-applications",
-                            "{{application_id}}",
-                            "approve"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Reject Application Manually",
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        },
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": "{\n  \"comments\": \"Rejected due to insufficient income\"\n}"
-                    },
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/reject",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "credit-applications",
-                            "{{application_id}}",
-                            "reject"
-                        ]
-                    }
+                    "path": [
+                        "api",
+                        "v1",
+                        "affiliates"
+                    ]
                 }
             }
-        ]
+        },
+        {
+            "name": "Get Affiliate by ID",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has complete affiliate data\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('document');",
+                            "    pm.expect(jsonData).to.have.property('fullName');",
+                            "    pm.expect(jsonData).to.have.property('monthlySalary');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/affiliates/{{affiliate_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "affiliates",
+                        "{{affiliate_id}}"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Affiliate by Document",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/affiliates/document/1017654311",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "affiliates",
+                        "document",
+                        "1017654311"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Update Affiliate",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"juan.updated@example.com\",\n  \"phone\": \"3009999999\",\n  \"monthlySalary\": 3500000\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/v1/affiliates/{{affiliate_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "affiliates",
+                        "{{affiliate_id}}"
+                    ]
+                }
+            }
+        }
+    ]
+},
+{
+    "name": "Credit Applications",
+    "item": [
+        {
+            "name": "Create Credit Application",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "pm.test(\"Application created with PENDING status\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.status).to.eql('PENDING');",
+                            "    pm.environment.set(\"application_id\", jsonData.id);",
+                            "});",
+                            "",
+                            "pm.test(\"Calculate expected monthly payment\", function() {",
+                            "    const amount = 10000000;",
+                            "    const months = 36;",
+                            "    const rate = 12.5 / 12 / 100;",
+                            "    ",
+                            "    const numerator = rate * Math.pow(1 + rate, months);",
+                            "    const denominator = Math.pow(1 + rate, months) - 1;",
+                            "    const payment = amount * (numerator / denominator);",
+                            "    ",
+                            "    console.log(\"Expected monthly payment:\", payment);",
+                            "    pm.expect(payment).to.be.closeTo(334536, 1000);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 10000000,\n  \"termMonths\": 36,\n  \"interestRate\": 12.5\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/v1/credit-applications",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "credit-applications"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get All Credit Applications",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/credit-applications",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "credit-applications"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Credit Application by ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "credit-applications",
+                        "{{application_id}}"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Pending Applications",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/credit-applications/pending",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "credit-applications",
+                        "pending"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get My Applications",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/credit-applications/my-applications?affiliateId={{affiliate_id}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "credit-applications",
+                        "my-applications"
+                    ],
+                    "query": [
+                        {
+                            "key": "affiliateId",
+                            "value": "{{affiliate_id}}"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Evaluate Credit Application",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Application evaluated (APPROVED or REJECTED)\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.status).to.be.oneOf(['APPROVED', 'REJECTED', 'PENDING']);",
+                            "});",
+                            "",
+                            "pm.test(\"Risk evaluation present\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('riskEvaluation');",
+                        });"
+                    ],
+                    "type": "text/javascript"
+                }
+            }
+        ],
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "url": {
+                "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/evaluate",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "credit-applications",
+                    "{{application_id}}",
+                    "evaluate"
+                ]
+            }
+        }
     },
     {
-        "name": "Risk Central Service",
-        "item": [
+        "event": [
             {
-                "name": "Evaluate Risk",
-                "event": [
-                    {
-                        "listen": "test",
-                        "script": {
-                            "exec": [
-                                "pm.test(\"Status code is 200\", function () {",
-                                "    pm.response.to.have.status(200);",
-                                "});",
-                                "",
-                                "pm.test(\"Response has score\", function () {",
-                                "    var jsonData = pm.response.json();",
-                                "    pm.expect(jsonData).to.have.property('score');",
-                                "});",
-                                "",
-                                "pm.test(\"Score is between 300 and 950\", function () {",
-                                "    var jsonData = pm.response.json();",
-                                "    pm.expect(jsonData.score).to.be.at.least(300);",
-                                "    pm.expect(jsonData.score).to.be.at.most(950);",
-                                "});",
-                                "",
-                                "pm.test(\"Risk level is valid\", function () {",
-                                "    var jsonData = pm.response.json();",
-                                "    pm.expect(jsonData.riskLevel).to.be.oneOf(['LOW', 'MEDIUM', 'HIGH']);",
-                                "});"
-                            ],
-                            "type": "text/javascript"
-                        }
-                    }
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "pm.test(\"Status code is 400\", function () {",
+                        "    pm.response.to.have.status(400);",
+                        "});",
+                        "",
+                        "pm.test(\"Error is business rule violation\", function () {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData.title).to.eql(\"Business Rule Violation\");",
+                        "    pm.expect(jsonData.detail).to.contain(\"exceeds maximum allowed\");",
+                        "});"
+                    ],
+                    "type": "text/javascript"
+                }
+            }
+        ],
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 30000000,\n  \"termMonths\": 24,\n  \"interestRate\": 15.0\n}"
+            },
+            "url": {
+                "raw": "{{base_url}}/api/v1/credit-applications",
+                "host": [
+                    "{{base_url}}"
                 ],
-                "request": {
-                    "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": "{\n  \"document\": \"1017654311\",\n  \"amount\": 5000000,\n  \"term\": 24\n}"
-                    },
-                    "url": {
-                        "raw": "{{risk_service_url}}/api/v1/risk-evaluation",
-                        "host": [
-                            "{{risk_service_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "risk-evaluation"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Health Check",
-                "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                        "raw": "{{risk_service_url}}/api/v1/risk-evaluation/health",
-                        "host": [
-                            "{{risk_service_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "risk-evaluation",
-                            "health"
-                        ]
-                    }
-                }
+                "path": [
+                    "api",
+                    "v1",
+                    "credit-applications"
+                ]
             }
-        ]
+        }
     },
     {
-        "name": "Analytics",
-        "item": [
+        "name": "Create Application - High Debt Ratio",
+        "event": [
             {
-                "name": "Get Approval Rate",
-                "request": {
-                    "method": "GET",
-                    "header": [
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "pm.test(\"Status code is 400\", function () {",
+                        "    pm.response.to.have.status(400);",
+                        "});",
+                        "",
+                        "pm.test(\"Error is business rule violation\", function () {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData.title).to.eql(\"Business Rule Violation\");",
+                        "    pm.expect(jsonData.detail).to.contain(\"exceeds maximum allowed\");",
+                        "});"
                     ],
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/analytics/approval-rate",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "analytics",
-                            "approval-rate"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Get Amount By Status",
-                "request": {
-                    "method": "GET",
-                    "header": [
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/analytics/amount-by-status",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "analytics",
-                            "amount-by-status"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Get Monthly Applications",
-                "request": {
-                    "method": "GET",
-                    "header": [
-                        {
-                            "key": "Authorization",
-                            "value": "Bearer {{jwt_token}}"
-                        }
-                    ],
-                    "url": {
-                        "raw": "{{base_url}}/api/v1/analytics/applications-per-month",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "api",
-                            "v1",
-                            "analytics",
-                            "applications-per-month"
-                        ]
-                    }
+                    "type": "text/javascript"
                 }
             }
-        ]
+        ],
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n  \"affiliateId\": {{affiliate_id}},\n  \"requestedAmount\": 15000000,\n  \"termMonths\": 12,\n  \"interestRate\": 18.0\n}"
+            },
+            "url": {
+                "raw": "{{base_url}}/api/v1/credit-applications",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "credit-applications"
+                ]
+            }
+        }
     },
     {
-        "name": "Observability",
-        "item": [
-            {
-                "name": "Health Check - Credit Service",
-                "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                        "raw": "{{base_url}}/actuator/health",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "actuator",
-                            "health"
-                        ]
-                    }
+        "name": "Approve Application Manually",
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
                 }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n  \"comments\": \"Approved manually by analyst\"\n}"
             },
-            {
-                "name": "Metrics",
-                "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                        "raw": "{{base_url}}/actuator/metrics",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "actuator",
-                            "metrics"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "Prometheus Metrics",
-                "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                        "raw": "{{base_url}}/actuator/prometheus",
-                        "host": [
-                            "{{base_url}}"
-                        ],
-                        "path": [
-                            "actuator",
-                            "prometheus"
-                        ]
-                    }
-                }
+            "url": {
+                "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/approve",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "credit-applications",
+                    "{{application_id}}",
+                    "approve"
+                ]
             }
-        ]
+        }
+    },
+    {
+        "name": "Reject Application Manually",
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n  \"comments\": \"Rejected due to insufficient income\"\n}"
+            },
+            "url": {
+                "raw": "{{base_url}}/api/v1/credit-applications/{{application_id}}/reject",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "credit-applications",
+                    "{{application_id}}",
+                    "reject"
+                ]
+            }
+        }
     }
+]
+},
+{
+"name": "Risk Central Service",
+"item": [
+    {
+        "name": "Evaluate Risk",
+        "event": [
+            {
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "pm.test(\"Status code is 200\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"Response has score\", function () {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData).to.have.property('score');",
+                        "});",
+                        "",
+                        "pm.test(\"Score is between 300 and 950\", function () {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData.score).to.be.at.least(300);",
+                        "    pm.expect(jsonData.score).to.be.at.most(950);",
+                        "});",
+                        "",
+                        "pm.test(\"Risk level is valid\", function () {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData.riskLevel).to.be.oneOf(['LOW', 'MEDIUM', 'HIGH']);",
+                        "});"
+                    ],
+                    "type": "text/javascript"
+                }
+            }
+        ],
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n  \"document\": \"1017654311\",\n  \"amount\": 5000000,\n  \"term\": 24\n}"
+            },
+            "url": {
+                "raw": "{{risk_service_url}}/api/v1/risk-evaluation",
+                "host": [
+                    "{{risk_service_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "risk-evaluation"
+                ]
+            }
+        }
+    },
+    {
+        "name": "Health Check",
+        "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+                "raw": "{{risk_service_url}}/api/v1/risk-evaluation/health",
+                "host": [
+                    "{{risk_service_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "risk-evaluation",
+                    "health"
+                ]
+            }
+        }
+    }
+]
+},
+{
+"name": "Analytics",
+"item": [
+    {
+        "name": "Get Approval Rate",
+        "request": {
+            "method": "GET",
+            "header": [
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "url": {
+                "raw": "{{base_url}}/api/v1/analytics/approval-rate",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "analytics",
+                    "approval-rate"
+                ]
+            }
+        }
+    },
+    {
+        "name": "Get Amount By Status",
+        "request": {
+            "method": "GET",
+            "header": [
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "url": {
+                "raw": "{{base_url}}/api/v1/analytics/amount-by-status",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "analytics",
+                    "amount-by-status"
+                ]
+            }
+        }
+    },
+    {
+        "name": "Get Monthly Applications",
+        "request": {
+            "method": "GET",
+            "header": [
+                {
+                    "key": "Authorization",
+                    "value": "Bearer {{jwt_token}}"
+                }
+            ],
+            "url": {
+                "raw": "{{base_url}}/api/v1/analytics/applications-per-month",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "api",
+                    "v1",
+                    "analytics",
+                    "applications-per-month"
+                ]
+            }
+        }
+    }
+]
+},
+{
+"name": "Observability",
+"item": [
+    {
+        "name": "Health Check - Credit Service",
+        "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+                "raw": "{{base_url}}/actuator/health",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "actuator",
+                    "health"
+                ]
+            }
+        }
+    },
+    {
+        "name": "Metrics",
+        "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+                "raw": "{{base_url}}/actuator/metrics",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "actuator",
+                    "metrics"
+                ]
+            }
+        }
+    },
+    {
+        "name": "Prometheus Metrics",
+        "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+                "raw": "{{base_url}}/actuator/prometheus",
+                "host": [
+                    "{{base_url}}"
+                ],
+                "path": [
+                    "actuator",
+                    "prometheus"
+                ]
+            }
+        }
+    }
+]
+}
 ],
 "variable": [
-    {
-        "key": "base_url",
-        "value": "http://localhost:8080",
-        "type": "string"
-    },
-    {
-        "key": "risk_service_url",
-        "value": "http://localhost:8081",
-        "type": "string"
-    },
-    {
-        "key": "jwt_token",
-        "value": "",
-        "type": "string"
-    },
-    {
-        "key": "affiliate_id",
-        "value": "",
-        "type": "string"
-    },
-    {
-        "key": "application_id",
-        "value": "",
-        "type": "string"
-    }
+{
+"key": "base_url",
+"value": "http://localhost:8080",
+"type": "string"
+},
+{
+"key": "risk_service_url",
+"value": "http://localhost:8081",
+"type": "string"
+},
+{
+"key": "jwt_token",
+"value": "",
+"type": "string"
+},
+{
+"key": "affiliate_id",
+"value": "",
+"type": "string"
+},
+{
+"key": "application_id",
+"value": "",
+"type": "string"
+}
 ]
 }

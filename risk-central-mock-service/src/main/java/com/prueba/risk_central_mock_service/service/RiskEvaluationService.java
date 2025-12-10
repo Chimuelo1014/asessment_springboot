@@ -14,7 +14,8 @@ import java.util.Random;
  * Risk Evaluation Service
  * 
  * Provides deterministic risk assessment based on applicant's document number.
- * The same document always returns the same score (using document hash as seed).
+ * The same document always returns the same score (using document hash as
+ * seed).
  * 
  * Score ranges:
  * - 300-500: HIGH RISK
@@ -36,33 +37,41 @@ public class RiskEvaluationService {
      */
     public RiskEvaluationResponse evaluateRisk(RiskEvaluationRequest request) {
         log.info("Evaluating risk for document: {}", request.getDocument());
-        
+
         // Use document hash as seed for consistency
-        int seed = request.getDocument().hashCode();
-        Random random = new Random(seed);
-        
-        // Generate score between 300 and 950 (651 possible values)
-        int score = 300 + random.nextInt(651);
-        
+        int score;
+        if ("1017654321".equals(request.getDocument())) {
+            score = 642; // MEDIUM RISK for Guide
+        } else if ("1111111111".equals(request.getDocument())) {
+            score = 800; // LOW RISK (Approved)
+        } else if ("9999999999".equals(request.getDocument())) {
+            score = 400; // HIGH RISK (Rejected)
+        } else {
+            int seed = request.getDocument().hashCode();
+            Random random = new Random(seed);
+            // Generate score between 300 and 950 (651 possible values)
+            score = 300 + random.nextInt(651);
+        }
+
         // Determine risk level based on score
         String riskLevel = determineRiskLevel(score);
         String detail = generateDetailMessage(score, riskLevel);
-        
+
         // Register metric
         Counter.builder("risk_evaluations_total")
-            .tag("risk_level", riskLevel)
-            .register(meterRegistry)
-            .increment();
-        
-        log.info("Evaluation completed - Document: {}, Score: {}, Level: {}", 
-            request.getDocument(), score, riskLevel);
-        
+                .tag("risk_level", riskLevel)
+                .register(meterRegistry)
+                .increment();
+
+        log.info("Evaluation completed - Document: {}, Score: {}, Level: {}",
+                request.getDocument(), score, riskLevel);
+
         return RiskEvaluationResponse.builder()
-            .document(request.getDocument())
-            .score(score)
-            .riskLevel(riskLevel)
-            .detail(detail)
-            .build();
+                .document(request.getDocument())
+                .score(score)
+                .riskLevel(riskLevel)
+                .detail(detail)
+                .build();
     }
 
     /**
@@ -84,24 +93,21 @@ public class RiskEvaluationService {
     /**
      * Generates detailed message explaining the risk assessment
      * 
-     * @param score Credit score
+     * @param score     Credit score
      * @param riskLevel Risk level
      * @return Detailed explanation message
      */
     private String generateDetailMessage(int score, String riskLevel) {
         return switch (riskLevel) {
             case "LOW" -> String.format(
-                "Excellent credit history (Score: %d). Reliable customer with low default risk.", 
-                score
-            );
+                    "Excellent credit history (Score: %d). Reliable customer with low default risk.",
+                    score);
             case "MEDIUM" -> String.format(
-                "Moderate credit history (Score: %d). Requires additional analysis before approval.", 
-                score
-            );
+                    "Moderate credit history (Score: %d). Requires additional analysis before approval.",
+                    score);
             case "HIGH" -> String.format(
-                "Poor credit history (Score: %d). High default risk, rejection recommended.", 
-                score
-            );
+                    "Poor credit history (Score: %d). High default risk, rejection recommended.",
+                    score);
             default -> "Unable to determine risk level";
         };
     }

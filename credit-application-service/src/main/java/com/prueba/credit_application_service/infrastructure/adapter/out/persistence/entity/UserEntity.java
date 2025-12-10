@@ -1,18 +1,12 @@
 package com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity;
 
-import com.prueba.credit_application_service.domain.model.enums.AffiliateStatus;
-import com.prueba.credit_application_service.domain.model.enums.CreditApplicationStatus;
-import com.prueba.credit_application_service.domain.model.enums.RiskLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users", indexes = {

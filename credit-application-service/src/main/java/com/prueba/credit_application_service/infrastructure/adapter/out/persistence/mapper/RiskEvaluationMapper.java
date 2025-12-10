@@ -25,5 +25,7 @@ public interface RiskEvaluationMapper {
      * @param domain the risk evaluation domain model
      * @return the risk evaluation entity
      */
+    @Mapping(target = "creditApplication.version", ignore = true)
+    @Mapping(target = "creditApplication.affiliate.version", ignore = true)
     RiskEvaluationEntity toEntity(RiskEvaluation domain);
 }
