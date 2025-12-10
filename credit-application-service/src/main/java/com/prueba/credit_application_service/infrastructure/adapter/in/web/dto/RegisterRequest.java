@@ -18,6 +18,7 @@ public class RegisterRequest {
     @NotBlank
     private String email;
 
-    @NotBlank
+    // ⚠️ Este campo NO debe ser usado en producción
+    // Solo para testing. En producción, forzar a ROLE_AFILIADO
     private String role;
 }

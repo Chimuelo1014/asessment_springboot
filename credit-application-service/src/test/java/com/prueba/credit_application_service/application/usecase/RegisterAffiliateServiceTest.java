@@ -32,12 +32,12 @@ class RegisterAffiliateServiceTest {
     void shouldRegisterAffiliateSuccessfully() {
         // Given
         AffiliateRegistrationCommand command = new AffiliateRegistrationCommand(
-            "123456789",
-            "John Doe",
-            "john@example.com",
-            "555-1234",
-            3000.0
-        );
+                "123456789",
+                "John Doe",
+                "john@example.com",
+                "555-1234",
+                3000.0,
+                null);
 
         when(affiliateRepository.existsByDocument("123456789")).thenReturn(false);
         when(affiliateRepository.save(any(Affiliate.class))).thenAnswer(invocation -> {
@@ -62,20 +62,20 @@ class RegisterAffiliateServiceTest {
     void shouldThrowExceptionWhenDocumentAlreadyExists() {
         // Given
         AffiliateRegistrationCommand command = new AffiliateRegistrationCommand(
-            "123456789",
-            "John Doe",
-            "john@example.com",
-            "555-1234",
-            3000.0
-        );
+                "123456789",
+                "John Doe",
+                "john@example.com",
+                "555-1234",
+                3000.0,
+                null);
 
         when(affiliateRepository.existsByDocument("123456789")).thenReturn(true);
 
         // When & Then
         assertThatThrownBy(() -> registerAffiliateService.register(command))
-            .isInstanceOf(DuplicateDocumentException.class)
-            .hasMessageContaining("123456789");
-        
+                .isInstanceOf(DuplicateDocumentException.class)
+                .hasMessageContaining("123456789");
+
         verify(affiliateRepository).existsByDocument("123456789");
         verify(affiliateRepository, never()).save(any(Affiliate.class));
     }

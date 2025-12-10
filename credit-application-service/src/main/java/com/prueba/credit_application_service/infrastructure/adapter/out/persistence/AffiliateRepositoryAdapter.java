@@ -31,8 +31,17 @@ public class AffiliateRepositoryAdapter implements AffiliateRepositoryPort {
     @Override
     @CacheEvict(value = "affiliates", allEntries = true)
     public Affiliate save(Affiliate affiliate) {
-        // Convert domain to entity
-        AffiliateEntity entity = mapper.toEntity(affiliate);
+        AffiliateEntity entity;
+        if (affiliate.getId() != null) {
+            // Update scenario: Fetch existing to get Version
+            entity = jpaRepository.findById(affiliate.getId())
+                    .orElse(mapper.toEntity(affiliate));
+            mapper.updateEntity(entity, affiliate);
+        } else {
+            // Create scenario
+            entity = mapper.toEntity(affiliate);
+        }
+
         // Persist
         AffiliateEntity savedEntity = jpaRepository.save(entity);
         // Convert back to domain

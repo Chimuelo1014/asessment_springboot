@@ -294,24 +294,46 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ## 🎯 Business Rules
 
-### Affiliate Requirements
-- ✅ Unique document number
-- ✅ Monthly salary > 0
-- ✅ Must be ACTIVE status to request credit
-- ✅ Minimum seniority: **6 months**
+## 📐 Reglas de Negocio Implementadas
 
-### Credit Application Rules
-- ✅ Maximum credit amount: **5x monthly salary**
-- ✅ Maximum debt ratio: **40% of monthly income**
-- ✅ Term: minimum 1 month
-- ✅ Automatic evaluation based on risk score
+### Validaciones de Afiliado
+- ✅ Documento único (no duplicados)
+- ✅ Salario mayor a 0
+- ✅ Estado ACTIVO requerido para solicitar crédito
+- ✅ Antigüedad mínima de 6 meses
 
-### Risk Evaluation Logic
-- **Score Range**: 300-850 (deterministic based on document hash)
-- **Risk Levels**:
-  - `LOW`: Score ≥ 700 → Auto-approve
-  - `MEDIUM`: Score 550-699 → Manual review required
-  - `HIGH`: Score < 550 → Auto-reject
+### Validaciones de Solicitud
+- ✅ Monto máximo: 5x el salario mensual
+- ✅ Relación cuota/ingreso: máximo 40%
+- ✅ Plazo mínimo: 1 mes
+- ✅ Tasa de interés requerida (propuesta por el afiliado)
+
+### Cálculo de Cuota Mensual
+Usa la **fórmula de amortización francesa**:
+Cuota = P × [r × (1 + r)^n] / [(1 + r)^n - 1]
+
+Donde:
+*   **P** = Monto solicitado
+*   **r** = Tasa mensual (tasa anual ÷ 12 ÷ 100)
+*   **n** = Plazo en meses
+
+**Ejemplo:**
+- Monto: $10,000,000
+- Plazo: 36 meses
+- Tasa: 12.5% anual
+- **Cuota ≈ $334,536/mes**
+
+### Evaluación de Riesgo
+| Score | Nivel | Decisión |
+|-------|-------|----------|
+| 700-950 | BAJO | Auto-aprobado |
+| 550-699 | MEDIO | Revisión manual |
+| 300-549 | ALTO | Auto-rechazado |
+
+### Score Determinístico
+El servicio de riesgo usa el **hash del documento** como seed:
+- Mismo documento → Mismo score siempre
+- Documentos diferentes → Scores diferentes
 
 ---
 

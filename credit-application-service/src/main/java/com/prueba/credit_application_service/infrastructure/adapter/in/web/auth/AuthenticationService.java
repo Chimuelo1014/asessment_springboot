@@ -43,7 +43,14 @@ public class AuthenticationService {
                 user.setUsername(request.getUsername());
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
                 user.setEmail(request.getEmail());
-                user.setRole(request.getRole());
+                user.setEmail(request.getEmail());
+
+                // ⚠️ PRODUCCIÓN: Siempre asignar ROLE_AFILIADO
+                // Solo admin puede crear otros roles via endpoint separado
+                // user.setRole("ROLE_AFILIADO"); // Forzar en producción
+
+                // Para testing, permitir el role del request:
+                user.setRole(request.getRole() != null ? request.getRole() : "ROLE_AFILIADO");
                 user.setEnabled(true);
                 user.setCreatedAt(LocalDateTime.now());
 

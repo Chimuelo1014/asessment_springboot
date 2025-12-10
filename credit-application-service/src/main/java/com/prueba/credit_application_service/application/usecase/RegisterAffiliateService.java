@@ -37,7 +37,7 @@ public class RegisterAffiliateService implements RegisterAffiliateUseCase {
         affiliate.setPhone(command.phone());
         affiliate.setMonthlySalary(command.monthlySalary());
         affiliate.setStatus(AffiliateStatus.ACTIVE);
-        affiliate.setAffiliationDate(LocalDate.now());
+        affiliate.setAffiliationDate(command.affiliationDate() != null ? command.affiliationDate() : LocalDate.now());
 
         // Persist through port
         return affiliateRepository.save(affiliate);

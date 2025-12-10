@@ -49,10 +49,12 @@ public class CreditApplication {
             return requestedAmount / termMonths;
         }
 
-        double monthlyRate = interestRate / 12 / 100;
-        double totalAmount = requestedAmount * (1 + (monthlyRate * termMonths));
+        // Fórmula de amortización francesa
+        double monthlyRate = (interestRate / 12) / 100;
+        double numerator = monthlyRate * Math.pow(1 + monthlyRate, termMonths);
+        double denominator = Math.pow(1 + monthlyRate, termMonths) - 1;
 
-        return totalAmount / termMonths;
+        return requestedAmount * (numerator / denominator);
     }
 
     public boolean isPaymentAffordable(Double monthlyIncome, Double maxDebtRatio) {

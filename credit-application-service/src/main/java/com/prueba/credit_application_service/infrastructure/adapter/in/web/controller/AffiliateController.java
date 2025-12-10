@@ -52,7 +52,8 @@ public class AffiliateController {
                 request.getFullName(),
                 request.getEmail(),
                 request.getPhone(),
-                request.getMonthlySalary());
+                request.getMonthlySalary(),
+                request.getAffiliationDate());
 
         Affiliate affiliate = registerUseCase.register(command);
 

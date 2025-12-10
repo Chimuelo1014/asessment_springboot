@@ -17,6 +17,7 @@ public interface AffiliateMapper {
      * @param entity the affiliate entity
      * @return the affiliate domain model
      */
+    @Mapping(target = "creditApplications", ignore = true)
     Affiliate toDomain(AffiliateEntity entity);
 
     /**
@@ -27,4 +28,15 @@ public interface AffiliateMapper {
      */
     @Mapping(target = "version", ignore = true)
     AffiliateEntity toEntity(Affiliate domain);
+
+    /**
+     * Update existing entity from domain
+     * 
+     * @param entity target entity
+     * @param domain source domain
+     */
+    @Mapping(target = "id", ignore = true) // ID shouldn't change
+    @Mapping(target = "creditApplications", ignore = true) // Don't touch collections
+    @Mapping(target = "version", ignore = true) // Don't touch version
+    void updateEntity(@org.mapstruct.MappingTarget AffiliateEntity entity, Affiliate domain);
 }

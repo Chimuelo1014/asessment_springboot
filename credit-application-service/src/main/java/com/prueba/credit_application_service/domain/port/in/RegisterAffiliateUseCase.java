@@ -11,6 +11,7 @@ public interface RegisterAffiliateUseCase {
             String fullName,
             String email,
             String phone,
-            Double monthlySalary) {
+            Double monthlySalary,
+            java.time.LocalDate affiliationDate) {
     }
 }
