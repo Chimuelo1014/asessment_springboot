@@ -1,11 +1,12 @@
 // src/components/dashboard/Dashboard.jsx
 import { useState, useEffect } from 'react';
-import { FileText, User, LogOut } from 'lucide-react';
+import { FileText, User, LogOut, BarChart } from 'lucide-react';
 import api from '../../services/api';
 import ApplicationsTable from './ApplicationsTable';
 import AffiliatesGrid from './AffiliatesGrid';
 import CreateApplicationModal from './CreateApplicationModal';
 import CreateAffiliateModal from './CreateAffiliateModal';
+import AnalyticsDashboard from '../AnalyticsDashboard';
 
 const Dashboard = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('applications');
@@ -24,6 +25,8 @@ const Dashboard = ({ user, onLogout }) => {
   }, [activeTab]);
 
   const loadData = async () => {
+    if (activeTab === 'analytics') return; // Analytics component loads its own data
+
     setLoading(true);
     try {
       if (activeTab === 'applications') {
@@ -82,24 +85,34 @@ const Dashboard = ({ user, onLogout }) => {
           <div className="flex gap-8">
             <button
               onClick={() => setActiveTab('applications')}
-              className={`py-4 border-b-2 font-medium transition ${
-                activeTab === 'applications'
+              className={`py-4 border-b-2 font-medium transition ${activeTab === 'applications'
                   ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-600 hover:text-gray-800'
-              }`}
+                }`}
             >
               Credit Applications
             </button>
             {isAnalyst && (
               <button
                 onClick={() => setActiveTab('affiliates')}
-                className={`py-4 border-b-2 font-medium transition ${
-                  activeTab === 'affiliates'
+                className={`py-4 border-b-2 font-medium transition ${activeTab === 'affiliates'
                     ? 'border-indigo-600 text-indigo-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 Affiliates
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`py-4 border-b-2 font-medium transition flex items-center gap-2 ${activeTab === 'analytics'
+                    ? 'border-indigo-600 text-indigo-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                  }`}
+              >
+                <BarChart size={18} />
+                Analytics
               </button>
             )}
           </div>
@@ -113,6 +126,8 @@ const Dashboard = ({ user, onLogout }) => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
+        ) : activeTab === 'analytics' ? (
+          <AnalyticsDashboard />
         ) : activeTab === 'applications' ? (
           <ApplicationsTable
             applications={applications}

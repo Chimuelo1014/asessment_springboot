@@ -3,6 +3,7 @@ package com.prueba.credit_application_service.infrastructure.adapter.out.persist
 import com.prueba.credit_application_service.domain.model.RiskEvaluation;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.RiskEvaluationEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * RiskEvaluationMapper - Maps between domain and entity using MapStruct

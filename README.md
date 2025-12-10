@@ -13,6 +13,9 @@ CoopCredit is a comprehensive credit application management system built with **
 - ✅ Observability with Actuator, Micrometer & Prometheus
 - ✅ Comprehensive Testing (Unit, Integration, Testcontainers)
 - ✅ Dockerized Deployment
+- ✅ Circuit Breaker & Retry with Resilience4j
+- ✅ Distributed Caching with Redis
+- ✅ Analytics Dashboard (React + Recharts)
 - ✅ Database Migrations with Flyway
 
 ---
@@ -75,7 +78,8 @@ CoopCredit is a comprehensive credit application management system built with **
                 │  │  Adapters        │  │
                 │  │  - JPA           │  │
                 │  │  - REST Client   │──┼────┐
-                │  └──────────────────┘  │    │
+                │  │  - Redis Cache   │  │    │
+                │  └────────┬─────────┘  │    │
                 └─────────┬───────────────┘    │
                           │                    │
                 ┌─────────▼──────────┐  ┌──────▼──────────┐
@@ -84,6 +88,12 @@ CoopCredit is a comprehensive credit application management system built with **
                 │   - Applications   │  │  - Score Calc   │
                 │   - Risk Evals     │  │  - Deterministic│
                 └────────────────────┘  └─────────────────┘
+                          │
+                ┌─────────▼──────────┐
+                │      Redis         │
+                │   - Distributed    │
+                │     Cache          │
+                └────────────────────┘
 ```
 
 ---
@@ -118,6 +128,9 @@ curl http://localhost:8080/actuator/health
 
 # Risk Central Mock Service
 curl http://localhost:8081/actuator/health
+
+# Frontend (Analytics Dashboard)
+# Open http://localhost:5173 in your browser
 ```
 
 4. **Access the services**
@@ -262,6 +275,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 | POST | `/api/v1/credit-applications/{id}/evaluate` | Evaluate application | ANALISTA, ADMIN |
 | POST | `/api/v1/credit-applications/{id}/approve` | Manually approve | ANALISTA, ADMIN |
 | POST | `/api/v1/credit-applications/{id}/reject` | Manually reject | ANALISTA, ADMIN |
+
+### Analytics Endpoints
+
+| Method | Endpoint | Description | Role Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/v1/analytics/approval-rate` | Get approval rates over time | ADMIN |
+| GET | `/api/v1/analytics/amount-by-status` | Get total amounts per status | ADMIN |
+| GET | `/api/v1/analytics/applications-per-month` | Get application volume per month | ADMIN |
 
 ### Risk Evaluation Endpoint (Mock Service)
 

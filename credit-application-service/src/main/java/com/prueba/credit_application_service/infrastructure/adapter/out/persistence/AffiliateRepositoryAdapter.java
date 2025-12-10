@@ -5,6 +5,8 @@ import com.prueba.credit_application_service.domain.port.out.AffiliateRepository
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.AffiliateEntity;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.mapper.AffiliateMapper;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.repository.AffiliateJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,25 +22,21 @@ import java.util.stream.Collectors;
  * It belongs to the INFRASTRUCTURE layer and can use Spring, JPA, etc.
  */
 @Component
+@RequiredArgsConstructor
 public class AffiliateRepositoryAdapter implements AffiliateRepositoryPort {
 
     private final AffiliateJpaRepository jpaRepository;
     private final AffiliateMapper mapper;
 
-    public AffiliateRepositoryAdapter(AffiliateJpaRepository jpaRepository,
-            AffiliateMapper mapper) {
-        this.jpaRepository = jpaRepository;
-        this.mapper = mapper;
-    }
-
     @Override
+    @CacheEvict(value = "affiliates", allEntries = true)
     public Affiliate save(Affiliate affiliate) {
         // Convert domain to entity
         AffiliateEntity entity = mapper.toEntity(affiliate);
         // Persist
-        AffiliateEntity saved = jpaRepository.save(entity);
+        AffiliateEntity savedEntity = jpaRepository.save(entity);
         // Convert back to domain
-        return mapper.toDomain(saved);
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
@@ -66,6 +64,7 @@ public class AffiliateRepositoryAdapter implements AffiliateRepositoryPort {
     }
 
     @Override
+    @CacheEvict(value = "affiliates", key = "#id")
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
     }

@@ -3,6 +3,7 @@ package com.prueba.credit_application_service.infrastructure.adapter.out.persist
 import com.prueba.credit_application_service.domain.model.Affiliate;
 import com.prueba.credit_application_service.infrastructure.adapter.out.persistence.entity.AffiliateEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * AffiliateMapper - Maps between domain and entity using MapStruct
@@ -24,5 +25,6 @@ public interface AffiliateMapper {
      * @param domain the affiliate domain model
      * @return the affiliate entity
      */
+    @Mapping(target = "version", ignore = true)
     AffiliateEntity toEntity(Affiliate domain);
 }

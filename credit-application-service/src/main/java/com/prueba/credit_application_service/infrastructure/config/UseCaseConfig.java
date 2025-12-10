@@ -17,11 +17,7 @@ public class UseCaseConfig {
         return new RegisterAffiliateService(affiliateRepository);
     }
 
-    @Bean
-    public GetAffiliateUseCase getAffiliateUseCase(
-            AffiliateRepositoryPort affiliateRepository) {
-        return new GetAffiliateService(affiliateRepository);
-    }
+    // Removed duplicate getAffiliateUseCase bean definition
 
     @Bean
     public UpdateAffiliateUseCase updateAffiliateUseCase(

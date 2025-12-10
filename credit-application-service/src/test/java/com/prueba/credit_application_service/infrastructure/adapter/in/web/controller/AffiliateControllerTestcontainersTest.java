@@ -1,7 +1,6 @@
 package com.prueba.credit_application_service.infrastructure.adapter.in.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.prueba.credit_application_service.infrastructure.adapter.in.web.dto.request.CreateAffiliateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,12 +15,17 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for AffiliateController using Testcontainers
+ * Integration tests for AffiliateController using Testcontainers with
+ * PostgreSQL
+ * This demonstrates real database integration testing as required by the
+ * specification
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,21 +55,21 @@ class AffiliateControllerTestcontainersTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldCreateAffiliateWithTestcontainers() throws Exception {
-        // Given
-        CreateAffiliateRequest request = new CreateAffiliateRequest();
-        request.setDocument("TC-" + System.currentTimeMillis());
-        request.setFullName("Test Container User");
-        request.setEmail("testcontainer@test.com");
-        request.setPhone("3001112222");
-        request.setMonthlySalary(4000000.0);
-        request.setAffiliationDate(LocalDate.now());
+        // Given - Create request as Map to avoid DTO dependency
+        Map<String, Object> request = new HashMap<>();
+        request.put("document", "TC-" + System.currentTimeMillis());
+        request.put("fullName", "Test Container User");
+        request.put("email", "testcontainer@test.com");
+        request.put("phone", "3001112222");
+        request.put("monthlySalary", 4000000.0);
+        request.put("affiliationDate", LocalDate.now().toString());
 
         // When & Then
         mockMvc.perform(post("/api/v1/affiliates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.document").value(request.getDocument()))
+                .andExpect(jsonPath("$.document").value(request.get("document")))
                 .andExpect(jsonPath("$.fullName").value("Test Container User"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
@@ -73,8 +77,40 @@ class AffiliateControllerTestcontainersTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldGetAllAffiliatesWithTestcontainers() throws Exception {
+        // When & Then
         mockMvc.perform(get("/api/v1/affiliates"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldGetAffiliateByIdWithTestcontainers() throws Exception {
+        // Given - First create an affiliate
+        Map<String, Object> createRequest = new HashMap<>();
+        createRequest.put("document", "TC-GETTEST-" + System.currentTimeMillis());
+        createRequest.put("fullName", "Get Test User");
+        createRequest.put("email", "gettest@test.com");
+        createRequest.put("phone", "3009998888");
+        createRequest.put("monthlySalary", 3500000.0);
+        createRequest.put("affiliationDate", LocalDate.now().toString());
+
+        String response = mockMvc.perform(post("/api/v1/affiliates")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Extract ID from response
+        Map<String, Object> createdAffiliate = objectMapper.readValue(response, Map.class);
+        Integer affiliateId = (Integer) createdAffiliate.get("id");
+
+        // When & Then - Get by ID
+        mockMvc.perform(get("/api/v1/affiliates/" + affiliateId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(affiliateId))
+                .andExpect(jsonPath("$.document").value(createRequest.get("document")));
     }
 }

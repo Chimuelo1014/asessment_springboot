@@ -9,4 +9,6 @@ public interface GetAffiliateUseCase {
     Affiliate getByDocument(String document);
 
     List<Affiliate> getAll();
+
+    boolean existsByDocument(String document);
 }

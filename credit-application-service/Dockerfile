@@ -8,6 +8,7 @@ RUN mvn clean package -DskipTests
 # Run Stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+RUN apk add --no-cache curl
+COPY --from=build /app/target/*.jar credit-application-service.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "credit-application-service.jar"]

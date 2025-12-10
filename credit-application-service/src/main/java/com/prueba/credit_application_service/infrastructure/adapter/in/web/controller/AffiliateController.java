@@ -40,15 +40,14 @@ public class AffiliateController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ANALISTA', 'ADMIN', 'AFILIADO')")
     @Operation(summary = "Create new affiliate", description = "Register a new affiliate in the system")
     public ResponseEntity<AffiliateResponse> createAffiliate(
             @Valid @RequestBody AffiliateRequest request) {
 
         log.info("Creating new affiliate with document: {}", request.getDocument());
 
-        RegisterAffiliateUseCase.AffiliateRegistrationCommand command = 
-            new RegisterAffiliateUseCase.AffiliateRegistrationCommand(
+        RegisterAffiliateUseCase.AffiliateRegistrationCommand command = new RegisterAffiliateUseCase.AffiliateRegistrationCommand(
                 request.getDocument(),
                 request.getFullName(),
                 request.getEmail(),
@@ -70,8 +69,7 @@ public class AffiliateController {
 
         log.info("Updating affiliate: {}", id);
 
-        UpdateAffiliateUseCase.UpdateAffiliateCommand command = 
-            new UpdateAffiliateUseCase.UpdateAffiliateCommand(
+        UpdateAffiliateUseCase.UpdateAffiliateCommand command = new UpdateAffiliateUseCase.UpdateAffiliateCommand(
                 id,
                 request.getFullName(),
                 request.getEmail(),

@@ -45,7 +45,7 @@ const api = {
   auth: {
     login: (credentials) =>
       apiClient.post('/auth/login', credentials),
-    
+
     register: (userData) =>
       apiClient.post('/auth/register', userData),
   },
@@ -54,16 +54,16 @@ const api = {
   affiliates: {
     getAll: () =>
       apiClient.get('/affiliates'),
-    
+
     getById: (id) =>
       apiClient.get(`/affiliates/${id}`),
-    
+
     getByDocument: (document) =>
       apiClient.get(`/affiliates/document/${document}`),
-    
+
     create: (data) =>
       apiClient.post('/affiliates', data),
-    
+
     update: (id, data) =>
       apiClient.put(`/affiliates/${id}`, data),
   },
@@ -72,32 +72,38 @@ const api = {
   applications: {
     getAll: () =>
       apiClient.get('/credit-applications'),
-    
+
     getById: (id) =>
       apiClient.get(`/credit-applications/${id}`),
-    
+
     getMyApplications: (affiliateId) =>
       apiClient.get(`/credit-applications/my-applications?affiliateId=${affiliateId}`),
-    
+
     getPending: () =>
       apiClient.get('/credit-applications/pending'),
-    
+
     create: (data) =>
       apiClient.post('/credit-applications', data),
-    
+
     evaluate: (id) =>
       apiClient.post(`/credit-applications/${id}/evaluate`),
-    
+
     approve: (id, comments) =>
       apiClient.post(`/credit-applications/${id}/approve`, null, {
         params: { comments }
       }),
-    
+
     reject: (id, comments) =>
       apiClient.post(`/credit-applications/${id}/reject`, null, {
         params: { comments }
       }),
   },
+};
+
+export const analytics = {
+  getMonthlyApplications: () => apiClient.get('/analytics/monthly'),
+  getStatusDistribution: () => apiClient.get('/analytics/status'),
+  getApprovalRate: () => apiClient.get('/analytics/approval-rate'),
 };
 
 export default api;
